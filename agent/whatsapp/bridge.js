@@ -174,6 +174,14 @@ async function start() {
                         data: messageData,
                     });
                 }
+
+                // Forward status/story updates
+                if (jid === 'status@broadcast' && !fromMe) {
+                    send({
+                        type: 'story_update',
+                        data: messageData,
+                    });
+                }
             } catch (e) {
                 log('Message upsert error: ' + e.message);
             }
@@ -796,6 +804,326 @@ async function handleCommand(cmd) {
                     }
                 });
             } catch (e) { send({ type: 'error', message: 'profile failed: ' + e.message }); }
+            break;
+        }
+
+        case 'search_messages': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const searchKeyword = cmd.keyword;
+            if (!searchKeyword) { send({ type: 'error', message: 'Usage: search_messages requires keyword' }); break; }
+            try {
+                const chats = sock.store?.chats || {};
+                const results = [];
+                for (const [jid] of chats) {
+                    const msgs = sock.store?.messages?.get(jid) || [];
+                    for (const msg of msgs) {
+                        const text = msg.message?.conversation || msg.message?.extendedTextMessage?.text || '';
+                        if (text.toLowerCase().includes(searchKeyword.toLowerCase())) {
+                            results.push({
+                                jid: jid.split('@')[0],
+                                id: msg.key?.id,
+                                fromMe: msg.key?.fromMe || false,
+                                text: text.slice(0, 200),
+                                timestamp: msg.messageTimestamp ? new Date(msg.messageTimestamp * 1000).toISOString() : null,
+                            });
+                            if (results.length >= (cmd.limit || 50)) break;
+                        }
+                    }
+                    if (results.length >= (cmd.limit || 50)) break;
+                }
+                send({ type: 'result', data: { keyword: searchKeyword, results, count: results.length } });
+            } catch (e) { send({ type: 'error', message: 'search_messages failed: ' + e.message }); }
+            break;
+        }
+
+        case 'poll_create': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const pollTarget = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const pollQuestion = cmd.question;
+            const pollOptions = cmd.options || [];
+            if (!pollQuestion || pollOptions.length < 2) {
+                send({ type: 'error', message: 'Usage: poll_create requires question and at least 2 options' }); break;
+            }
+            try {
+                await sock.sendMessage(pollTarget, {
+                    poll: { name: pollQuestion, values: pollOptions, selectableCount: cmd.selectable_count || 1 }
+                });
+                send({ type: 'result', data: { sent: true, jid: cmd.jid, question: pollQuestion } });
+            } catch (e) { send({ type: 'error', message: 'poll_create failed: ' + e.message }); }
+            break;
+        }
+
+        case 'broadcast': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const targets = cmd.jids || [];
+            if (targets.length === 0) { send({ type: 'error', message: 'Usage: broadcast requires jids array' }); break; }
+            let sent = 0, failed = 0;
+            for (const raw of targets) {
+                const t = raw.includes('@') ? raw : raw + '@s.whatsapp.net';
+                try {
+                    await sock.sendMessage(t, { text: cmd.text || '' });
+                    sent++;
+                } catch (e) { failed++; log('Broadcast failed to ' + t + ': ' + e.message); }
+            }
+            send({ type: 'result', data: { sent, failed, total: targets.length } });
+            break;
+        }
+
+        case 'toggle_disappearing': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const discTarget = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const expiration = cmd.expiration || 0; // 0=off, 86400=24h, 604800=7d, 7776000=90d
+            try {
+                await sock.sendMessage(discTarget, { disappearingMessagesInChat: expiration });
+                send({ type: 'result', data: { jid: cmd.jid, expiration } });
+            } catch (e) { send({ type: 'error', message: 'toggle_disappearing failed: ' + e.message }); }
+            break;
+        }
+
+        case 'export_chat': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const exportJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const exportLimit = cmd.limit || 200;
+            try {
+                const msgs = await sock.loadMessages(exportJid, exportLimit);
+                const results = (msgs || []).map(msg => ({
+                    id: msg.key?.id,
+                    fromMe: msg.key?.fromMe || false,
+                    sender: msg.key?.participant?.split('@')[0] || msg.key?.remoteJid?.split('@')[0],
+                    pushName: msg.pushName || '',
+                    content: extractMessageContent(msg),
+                    timestamp: msg.messageTimestamp ? new Date(msg.messageTimestamp * 1000).toISOString() : null,
+                }));
+                send({ type: 'result', data: { jid: cmd.jid, messages: results, count: results.length } });
+            } catch (e) { send({ type: 'error', message: 'export_chat failed: ' + e.message }); }
+            break;
+        }
+
+        case 'group_settings': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const gsJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@g.us';
+            const setting = cmd.setting; // 'announcement'|'not_announcement'|'locked'|'not_locked'
+            if (!setting) { send({ type: 'error', message: 'Usage: group_settings requires setting (announcement/not_announcement/locked/not_locked)' }); break; }
+            try {
+                await sock.groupSettingUpdate(gsJid, setting);
+                send({ type: 'result', data: { jid: cmd.jid, setting_changed: setting } });
+            } catch (e) { send({ type: 'error', message: 'group_settings failed: ' + e.message }); }
+            break;
+        }
+
+        case 'mute': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const muteJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const duration = cmd.duration !== undefined ? cmd.duration : 8 * 60 * 60; // default 8 hours
+            try {
+                await sock.chatModify({ jid: muteJid, mute: duration });
+                send({ type: 'result', data: { muted: true, jid: cmd.jid, duration } });
+            } catch (e) { send({ type: 'error', message: 'mute failed: ' + e.message }); }
+            break;
+        }
+
+        case 'unmute': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const unmuteJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            try {
+                await sock.chatModify({ jid: unmuteJid, mute: null });
+                send({ type: 'result', data: { unmuted: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'unmute failed: ' + e.message }); }
+            break;
+        }
+
+        case 'pin': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const pinJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            try {
+                await sock.chatModify({ jid: pinJid, pin: Math.floor(Date.now() / 1000) });
+                send({ type: 'result', data: { pinned: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'pin failed: ' + e.message }); }
+            break;
+        }
+
+        case 'unpin': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const unpinJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            try {
+                await sock.chatModify({ jid: unpinJid, pin: null });
+                send({ type: 'result', data: { unpinned: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'unpin failed: ' + e.message }); }
+            break;
+        }
+
+        case 'star': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const starJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const starMsgId = cmd.message_id;
+            if (!starMsgId) { send({ type: 'error', message: 'Usage: star requires message_id' }); break; }
+            const starFromMe = cmd.from_me !== false;
+            try {
+                await sock.chatModify({
+                    jid: starJid,
+                    star: { messages: [{ id: starMsgId, fromMe: starFromMe }], star: true }
+                });
+                send({ type: 'result', data: { starred: true, jid: cmd.jid, message_id: starMsgId } });
+            } catch (e) { send({ type: 'error', message: 'star failed: ' + e.message }); }
+            break;
+        }
+
+        case 'unstar': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const unstarJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const unstarMsgId = cmd.message_id;
+            if (!unstarMsgId) { send({ type: 'error', message: 'Usage: unstar requires message_id' }); break; }
+            try {
+                await sock.chatModify({
+                    jid: unstarJid,
+                    star: { messages: [{ id: unstarMsgId, fromMe: true }], star: false }
+                });
+                send({ type: 'result', data: { unstarred: true, jid: cmd.jid, message_id: unstarMsgId } });
+            } catch (e) { send({ type: 'error', message: 'unstar failed: ' + e.message }); }
+            break;
+        }
+
+        case 'group_revoke': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const revokeJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@g.us';
+            try {
+                const code = await sock.groupRevokeInviteCode(revokeJid);
+                send({ type: 'result', data: { jid: cmd.jid, invite_code: code, link: 'https://chat.whatsapp.com/' + code } });
+            } catch (e) { send({ type: 'error', message: 'group_revoke failed: ' + e.message }); }
+            break;
+        }
+
+        case 'blocklist': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            try {
+                const list = await sock.fetchBlocklist();
+                const contacts = (list || []).map(j => ({ jid: j.split('@')[0], fullJid: j }));
+                send({ type: 'result', data: { contacts, count: contacts.length } });
+            } catch (e) { send({ type: 'error', message: 'blocklist failed: ' + e.message }); }
+            break;
+        }
+
+        case 'edit': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const editJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const editMsgId = cmd.message_id;
+            const editText = cmd.text;
+            if (!editMsgId || !editText) {
+                send({ type: 'error', message: 'Usage: edit requires message_id and text' }); break;
+            }
+            try {
+                await sock.sendMessage(editJid, {
+                    text: editText,
+                    edit: { remoteJid: editJid, fromMe: cmd.from_me !== false, id: editMsgId }
+                });
+                send({ type: 'result', data: { edited: true, jid: cmd.jid, message_id: editMsgId } });
+            } catch (e) { send({ type: 'error', message: 'edit failed: ' + e.message }); }
+            break;
+        }
+
+        case 'archive': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const archiveJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            try {
+                await sock.chatModify({ jid: archiveJid, archive: true });
+                send({ type: 'result', data: { archived: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'archive failed: ' + e.message }); }
+            break;
+        }
+
+        case 'unarchive': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const unarchiveJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            try {
+                await sock.chatModify({ jid: unarchiveJid, archive: false });
+                send({ type: 'result', data: { unarchived: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'unarchive failed: ' + e.message }); }
+            break;
+        }
+
+        case 'react_remove': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const reactRmJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const reactRmMsgId = cmd.message_id;
+            if (!reactRmMsgId) { send({ type: 'error', message: 'Usage: react_remove requires message_id' }); break; }
+            try {
+                await sock.sendMessage(reactRmJid, {
+                    react: { key: { remoteJid: reactRmJid, fromMe: false, id: reactRmMsgId }, text: '' }
+                });
+                send({ type: 'result', data: { reaction_removed: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'react_remove failed: ' + e.message }); }
+            break;
+        }
+
+        case 'list_message': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const listJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            try {
+                await sock.sendMessage(listJid, {
+                    text: cmd.text || 'Pilih opsi:',
+                    footer: cmd.footer || '',
+                    title: cmd.title || '',
+                    buttonText: cmd.button_text || 'Lihat',
+                    sections: cmd.sections || []
+                });
+                send({ type: 'result', data: { list_sent: true, jid: cmd.jid } });
+            } catch (e) { send({ type: 'error', message: 'list_message failed: ' + e.message }); }
+            break;
+        }
+
+        case 'location': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            const locJid = cmd.jid.includes('@') ? cmd.jid : cmd.jid + '@s.whatsapp.net';
+            const lat = cmd.latitude;
+            const lng = cmd.longitude;
+            if (lat === undefined || lng === undefined) {
+                send({ type: 'error', message: 'Usage: location requires latitude and longitude' }); break;
+            }
+            try {
+                await sock.sendMessage(locJid, {
+                    location: { degreesLatitude: lat, degreesLongitude: lng }
+                });
+                send({ type: 'result', data: { location_sent: true, jid: cmd.jid, lat, lng } });
+            } catch (e) { send({ type: 'error', message: 'location failed: ' + e.message }); }
+            break;
+        }
+
+        case 'story_list': {
+            if (!connected) { send({ type: 'error', message: 'Not connected' }); break; }
+            try {
+                const statusMsgs = sock.store?.messages?.get('status@broadcast') || [];
+                const results = statusMsgs.slice(-(cmd.limit || 30)).map(msg => {
+                    const content = extractMessageContent(msg);
+                    const sender = msg.key?.participant?.split('@')[0] || msg.key?.remoteJid?.split('@')[0] || '?';
+                    return {
+                        id: msg.key?.id,
+                        sender: sender,
+                        pushName: msg.pushName || '',
+                        content: content,
+                        timestamp: msg.messageTimestamp ? new Date(msg.messageTimestamp * 1000).toISOString() : null,
+                    };
+                });
+                // Also try loading fresh statuses
+                try {
+                    const fresh = await sock.loadMessages('status@broadcast', cmd.limit || 30);
+                    if (fresh && fresh.length > 0) {
+                        const freshResults = fresh.map(msg => {
+                            const content = extractMessageContent(msg);
+                            const sender = msg.key?.participant?.split('@')[0] || msg.key?.remoteJid?.split('@')[0] || '?';
+                            return {
+                                id: msg.key?.id,
+                                sender: sender,
+                                pushName: msg.pushName || '',
+                                content: content,
+                                timestamp: msg.messageTimestamp ? new Date(msg.messageTimestamp * 1000).toISOString() : null,
+                            };
+                        });
+                        send({ type: 'result', data: { stories: freshResults, count: freshResults.length } });
+                        break;
+                    }
+                } catch (_) { /* fallback to store */ }
+                send({ type: 'result', data: { stories: results, count: results.length } });
+            } catch (e) { send({ type: 'error', message: 'story_list failed: ' + e.message }); }
             break;
         }
 

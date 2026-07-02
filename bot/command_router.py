@@ -37,12 +37,17 @@ class CommandRouter:
                         return await self.route(alias_cmd, user_id)
                 except Exception:
                     pass
-            return "❓ Perintah tidak dikenali. Ketik `!help` untuk bantuan."
+            # AI natural response for unknown commands
+            try:
+                from agent.whatsapp_spy import ai_natural_response
+                return await ai_natural_response("Perintah nggak dikenal", message_text)
+            except Exception:
+                return "Hmm, aku kurang paham perintah itu. Coba ketik `!help` buat lihat daftar perintah yang tersedia, ya."
 
         # Whitelist validation
         is_valid, _ = InputSanitizer.validate_command_whitelist(f"!{command_name}")
         if not is_valid:
-            return f"❌ Perintah `{command_name}` tidak ada dalam whitelist keamanan."
+            return f"Maaf, perintah `{command_name}` nggak ada dalam daftar izin keamanan. Minta admin buat ngaktifin, ya."
 
         try:
             if command_name in ("screenshot", "ss"):
@@ -1088,6 +1093,36 @@ HELP_TEXT = """🤖 <b>Remote Laptop Control — Help</b>
 <code>!wa group_invite &lt;grup_id&gt;</code> — Link undangan grup
 <code>!wa group_members &lt;grup_id&gt;</code> — Daftar anggota grup
 <code>!wa group_leave &lt;grup_id&gt;</code> — Keluar dari grup
+<code>!wa search &lt;keyword&gt;</code> — Cari pesan di semua chat
+<code>!wa export &lt;nomor&gt; [limit]</code> — Export chat ke file
+<code>!wa stats &lt;nomor&gt; [limit]</code> — Statistik chat
+<code>!wa pattern &lt;nomor&gt; [limit]</code> — Pola aktivitas target
+<code>!wa transcribe &lt;nomor&gt; [limit]</code> — Transkrip voice note
+<code>!wa backup [nomor]</code> — Backup chat ke file
+<code>!wa autoreply &lt;nomor&gt; [prompt] [style]</code> — AI auto-reply
+<code>!wa autoreply_status</code> — Status auto-reply
+<code>!wa keyword add|remove|list &lt;kata&gt;</code> — Keyword alert
+<code>!wa smartinbox on|off [kriteria]</code> — AI filter forward
+<code>!wa mention on|off</code> — Notifikasi mention
+<code>!wa poll &lt;nomor&gt; &lt;pertanyaan&gt; | opsi1 | opsi2</code> — Buat poll
+<code>!wa broadcast &lt;nomor1,nomor2&gt; &lt;teks&gt;</code> — Broadcast pesan
+<code>!wa schedule &lt;nomor&gt; &lt;detik&gt; &lt;teks&gt;</code> — Pesan terjadwal
+<code>!wa disappear &lt;nomor&gt; [durasi]</code> — Disappearing messages
+ <code>!wa forward_all on|off|status</code> — Forward semua chat
+<code>!wa group_settings &lt;gid&gt; announcement|not_announcement|locked|not_locked</code> — Pengaturan grup
+<code>!wa group_revoke &lt;gid&gt;</code> — Cabut link undangan grup
+<code>!wa mute &lt;nomor&gt; [jam]</code> — Mute chat
+<code>!wa unmute &lt;nomor&gt;</code> — Unmute chat
+<code>!wa pin &lt;nomor&gt;</code> / <code>!wa unpin &lt;nomor&gt;</code> — Pin/unpin chat
+<code>!wa archive &lt;nomor&gt;</code> / <code>!wa unarchive &lt;nomor&gt;</code> — Arsip chat
+<code>!wa star &lt;nomor&gt; &lt;id&gt;</code> / <code>!wa unstar &lt;nomor&gt; &lt;id&gt;</code> — Star pesan
+<code>!wa edit &lt;nomor&gt; &lt;id&gt; &lt;teks&gt;</code> — Edit pesan terkirim
+<code>!wa react_remove &lt;nomor&gt; &lt;id&gt;</code> — Hapus reaksi
+<code>!wa blocklist</code> — Daftar kontak diblokir
+<code>!wa list_msg &lt;nomor&gt; | Title | Text | Opsi1 | Opsi2</code> — Interactive list
+<code>!wa location &lt;nomor&gt; &lt;lat&gt; &lt;lng&gt;</code> — Kirim lokasi
+<code>!wa story list</code> — Story terbaru
+<code>!wa semantic &lt;query&gt;</code> — Cari pesan berdasarkan makna (AI semantic search)
 
 <b>Mode AI (jika aktif):</b>
 Ketik perintah natural language langsung untuk diterjemahkan oleh AI. Contoh:

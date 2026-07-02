@@ -3408,44 +3408,98 @@ class CommandHandler:
             group_add, group_remove, group_promote, group_demote,
             group_subject, group_desc, group_invite, group_leave, group_members,
             get_contacts, block_contact, unblock_contact, get_profile,
+            auto_reply_set, auto_reply_status,
+            keyword_alert_add, keyword_alert_remove, keyword_alert_list,
+            search_messages, chat_export, broadcast, poll_create,
+            toggle_disappearing, schedule_message, auto_forward_all,
+            transcribe_latest, mention_alert, chat_stats, activity_pattern,
+            smart_inbox, chat_backup,
+            group_settings, mute_chat, unmute_chat, pin_chat, unpin_chat,
+            archive_chat, unarchive_chat, star_message, unstar_message,
+            edit_message, react_remove, group_revoke, blocklist_view,
+            list_message, send_location, story_list, semantic_search,
+            ai_natural_response,
         )
         if not args:
             return (
                 "💬 *WhatsApp Spy*\n"
-                "`!wa scan` — Tampilkan QR pairing\n"
-                "`!wa check <nomor>` — Cek status online/offline\n"
+                "=== Basic ===\n"
+                "`!wa scan` — QR pairing\n"
+                "`!wa check <nomor>` — Status online\n"
                 "`!wa monitor <nomor> [interval]` — Monitor background\n"
-                "`!wa stop <nomor>` — Hentikan monitor\n"
-                "`!wa stop_all` — Hentikan semua monitor\n"
-                "`!wa list` — Monitor aktif\n"
-                "`!wa status` — Status koneksi\n"
-                "`!wa reset` — Reset pairing\n"
-                "`!wa messages <nomor> [limit]` — Riwayat pesan\n"
-                "`!wa groups` — Daftar grup\n"
-                "`!wa send <nomor> <teks>` — Kirim pesan teks\n"
-                "`!wa send_media <nomor> <file> [image/video/audio/document] [caption]` — Kirim media\n"
-                "`!wa reply <nomor> <id_pesan> <teks>` — Balas pesan spesifik\n"
-                "`!wa react <nomor> <id_pesan> [emoji]` — Reaksi pesan\n"
-                "`!wa read <nomor> [id_pesan]` — Tandai sudah dibaca\n"
-                "`!wa typing <nomor> on/off/recording` — Indikator mengetik\n"
-                "`!wa delete <nomor> <id_pesan>` — Hapus pesan\n"
-                "`!wa contacts` — Daftar kontak\n"
-                "`!wa block <nomor>` — Blokir kontak\n"
-                "`!wa unblock <nomor>` — Buka blokir\n"
-                "`!wa profile <nomor>` — Foto profil + status\n"
-                "`!wa forward <on/off/status> [nomor]` — Forward pesan otomatis ke Telegram\n"
-                "`!wa group_add <grup_id> <nomor1> [nomor2...]` — Tambah anggota grup\n"
-                "`!wa group_remove <grup_id> <nomor1> [nomor2...]` — Keluarkan anggota\n"
-                "`!wa group_promote <grup_id> <nomor1> [nomor2...]` — Jadikan admin\n"
-                "`!wa group_demote <grup_id> <nomor1> [nomor2...]` — Turunkan admin\n"
-                "`!wa group_subject <grup_id> <nama>` — Ubah nama grup\n"
-                "`!wa group_desc <grup_id> <deskripsi>` — Ubah deskripsi grup\n"
-                "`!wa group_invite <grup_id>` — Link undangan grup\n"
-                "`!wa group_members <grup_id>` — Daftar anggota grup\n"
-                "`!wa group_leave <grup_id>` — Keluar dari grup\n\n"
+                "`!wa stop <nomor>` / `!wa stop_all` / `!wa list`\n"
+                "`!wa status` / `!wa reset`\n"
+                "=== Messaging ===\n"
+                "`!wa messages <nomor> [limit]` / `!wa groups`\n"
+                "`!wa send <nomor> <teks>` / `!wa reply <nomor> <id> <teks>`\n"
+                "`!wa send_media <nomor> <file> [type] [caption]`\n"
+                "`!wa react <nomor> <id> [emoji]` / `!wa delete <nomor> <id>`\n"
+                "`!wa read <nomor> [id]` / `!wa typing <nomor> on/off/recording`\n"
+                "=== Contacts ===\n"
+                "`!wa contacts` / `!wa block <nomor>` / `!wa unblock <nomor>`\n"
+                "`!wa profile <nomor>`\n"
+                "=== Group ===\n"
+                "`!wa group_add/remove/promote/demote <gid> <nomor...>`\n"
+                "`!wa group_subject/desc <gid> <teks>`\n"
+                "`!wa group_invite/members/leave <gid>`\n"
+                "=== Intel ===\n"
+                "`!wa search <keyword>` — Cari pesan di semua chat\n"
+                "`!wa export <nomor> [limit]` — Export chat ke file\n"
+                "`!wa stats <nomor> [limit]` — Statistik chat\n"
+                "`!wa pattern <nomor> [limit]` — Pola aktivitas target\n"
+                "`!wa transcribe <nomor> [limit]` — Transkrip voice note\n"
+                "`!wa backup [nomor]` — Backup chat\n"
+                "=== AI & Automation ===\n"
+                "`!wa autoreply <nomor> [prompt] [style]` — AI auto-reply\n"
+                "`!wa autoreply_status` — Status auto-reply\n"
+                "`!wa keyword add <kata>` / `!wa keyword remove <kata>` / `!wa keyword list`\n"
+                "`!wa smartinbox on/off [kriteria]` — AI filter forward\n"
+                "`!wa mention on/off` — Notifikasi mention\n"
+                "=== Utility ===\n"
+                "`!wa poll <nomor> | Pertanyaan | Opsi1 | Opsi2`\n"
+                "`!wa broadcast <nomor1,nomor2,...> <teks>`\n"
+                "`!wa schedule <nomor> <detik> <teks>` — Pesan terjadwal\n"
+                "`!wa disappear <nomor> [0/86400/604800/7776000]`\n"
+                "`!wa forward_all on/off/status` — Forward semua chat\n"
+                "`!wa forward <on/off/status> [nomor]` — Forward per chat\n"
+                "=== Group Tools ===\n"
+                "`!wa group_settings <gid> announcement/not_announcement/locked/not_locked`\n"
+                "`!wa group_revoke <gid>` — Cabut link grup\n"
+                "=== Chat Management ===\n"
+                "`!wa mute <nomor> [jam]` / `!wa unmute <nomor>`\n"
+                "`!wa pin <nomor>` / `!wa unpin <nomor>`\n"
+                "`!wa archive <nomor>` / `!wa unarchive <nomor>`\n"
+                "=== Message Actions ===\n"
+                "`!wa star <nomor> <id>` / `!wa unstar <nomor> <id>`\n"
+                "`!wa edit <nomor> <id> <teks>` — Edit pesan\n"
+                "`!wa react_remove <nomor> <id>` — Hapus reaksi\n"
+                "=== Interactive ===\n"
+                "`!wa list_msg <nomor> | Title | Text | Opsi1 | Opsi2 | ...`\n"
+                "`!wa location <nomor> <lat> <lng>` — Kirim lokasi\n"
+                "`!wa blocklist` — Daftar kontak diblokir\n"
+                "`!wa story list` — Story terbaru\n"
+                 "=== AI Search ===\n"
+                 "`!wa semantic <query>` — Cari pesan berdasarkan makna\n\n"
                 "Contoh: !wa messages 6281234567890 10"
             )
         cmd = args[0].lower()
+        # Natural language aliases untuk subcommand WA
+        _wa_aliases = {
+            "kirim": "send", "balas": "reply", "cari": "search", "hapus": "delete",
+            "grup": "groups", "kontak": "contacts", "blokir": "block", "buka blokir": "unblock",
+            "profil": "profile", "siar": "broadcast", "blast": "broadcast", "polling": "poll",
+            "atur": "group_settings", "undang": "group_invite", "anggota": "group_members",
+            "keluar": "group_leave", "baca": "read", "ketik": "typing",
+            "rekam": "typing", "status": "status", "cek": "check", "pantau": "monitor",
+            "berhenti": "stop", "reset": "reset", "ekspor": "export", "backup": "backup",
+            "statistik": "stats", "aktifitas": "pattern", "tandai": "star", "buka tandai": "unstar",
+            "edit": "edit", "lokasi": "location", "cerita": "story", "semua cerita": "story",
+            "daftar blokir": "blocklist", "mute": "mute", "bisu": "mute",
+            "unmute": "unmute", "buka bisu": "unmute", "pin": "pin", "semat": "pin",
+            "unpin": "unpin", "buka semat": "unpin", "arsip": "archive",
+            "buka arsip": "unarchive", "undang ulang": "group_revoke",
+        }
+        cmd = _wa_aliases.get(cmd, cmd)
         if cmd == "check" and len(args) > 1:
             return await check(args[1])
         elif cmd == "monitor" and len(args) > 1:
@@ -3517,5 +3571,123 @@ class CommandHandler:
             return await group_members(args[1])
         elif cmd == "group_leave" and len(args) > 1:
             return await group_leave(args[1])
-        return "Gunakan: !wa scan|check|monitor|stop|list|status|reset|messages|groups|send|reply|react|send_media|read|typing|delete|contacts|block|unblock|profile|forward|group_*"
+        elif cmd == "search" and len(args) > 1:
+            return await search_messages(" ".join(args[1:]))
+        elif cmd == "export" and len(args) > 1:
+            limit = int(args[2]) if len(args) > 2 else 200
+            return await chat_export(args[1], limit)
+        elif cmd == "stats" and len(args) > 1:
+            limit = int(args[2]) if len(args) > 2 else 200
+            return await chat_stats(args[1], limit)
+        elif cmd == "pattern" and len(args) > 1:
+            limit = int(args[2]) if len(args) > 2 else 200
+            return await activity_pattern(args[1], limit)
+        elif cmd == "transcribe" and len(args) > 1:
+            limit = int(args[2]) if len(args) > 2 else 10
+            return await transcribe_latest(args[1], limit)
+        elif cmd == "backup":
+            phone = args[1] if len(args) > 1 else ""
+            return await chat_backup(phone)
+        elif cmd == "autoreply" and len(args) > 1:
+            if args[1] == "status":
+                return await auto_reply_status()
+            prompt = " ".join(args[2:]) if len(args) > 2 else ""
+            style = args[2] if len(args) > 2 else ""
+            return await auto_reply_set(args[1], prompt, style)
+        elif cmd == "autoreply_status":
+            return await auto_reply_status()
+        elif cmd == "keyword" and len(args) > 2:
+            if args[1] == "add":
+                return await keyword_alert_add(args[2:])
+            elif args[1] == "remove":
+                return await keyword_alert_remove(args[2:])
+            elif args[1] == "list":
+                return await keyword_alert_list()
+        elif cmd == "keyword_list":
+            return await keyword_alert_list()
+        elif cmd == "smartinbox":
+            action = args[1] if len(args) > 1 else "status"
+            prompt = " ".join(args[2:]) if len(args) > 2 else ""
+            return await smart_inbox(action, prompt)
+        elif cmd == "mention":
+            action = args[1] if len(args) > 1 else "status"
+            return await mention_alert(action)
+        elif cmd == "poll" and len(args) > 2:
+            parts = " ".join(args[1:]).split("|")
+            phone = parts[0].strip()
+            question = parts[1].strip() if len(parts) > 1 else ""
+            options = [p.strip() for p in parts[2:]] if len(parts) > 2 else []
+            if not question or len(options) < 2:
+                return await ai_natural_response("Bikin poll tapi formatnya kurang lengkap", " Minimal 1 pertanyaan dan 2 opsi. Contoh: !wa poll 628xxx | Makan apa? | Nasi | Mie")
+            return await poll_create(phone, question, options)
+        elif cmd == "broadcast" and len(args) > 2:
+            jids = args[1].split(",")
+            text = " ".join(args[2:])
+            return await broadcast(jids, text)
+        elif cmd == "schedule" and len(args) > 3:
+            try:
+                delay = int(args[2])
+            except ValueError:
+                return "Maaf, waktu harus pakai angka (detik), ya."
+            return await schedule_message(args[1], delay, " ".join(args[3:]))
+        elif cmd == "disappear" and len(args) > 1:
+            duration = int(args[2]) if len(args) > 2 else 86400
+            return await toggle_disappearing(args[1], duration)
+        elif cmd == "forward_all":
+            action = args[1] if len(args) > 1 else "status"
+            return await auto_forward_all(action)
+        elif cmd == "group_settings" and len(args) > 2:
+            return await group_settings(args[1], args[2])
+        elif cmd == "mute" and len(args) > 1:
+            hours = int(args[2]) if len(args) > 2 else 8
+            return await mute_chat(args[1], hours)
+        elif cmd == "unmute" and len(args) > 1:
+            return await unmute_chat(args[1])
+        elif cmd == "pin" and len(args) > 1:
+            return await pin_chat(args[1])
+        elif cmd == "unpin" and len(args) > 1:
+            return await unpin_chat(args[1])
+        elif cmd == "archive" and len(args) > 1:
+            return await archive_chat(args[1])
+        elif cmd == "unarchive" and len(args) > 1:
+            return await unarchive_chat(args[1])
+        elif cmd == "star" and len(args) > 2:
+            return await star_message(args[1], args[2])
+        elif cmd == "unstar" and len(args) > 2:
+            return await unstar_message(args[1], args[2])
+        elif cmd == "edit" and len(args) > 2:
+            msg_id = args[2] if len(args) > 2 else ""
+            text = " ".join(args[3:]) if len(args) > 3 else ""
+            return await edit_message(args[1], msg_id, text)
+        elif cmd == "react_remove" and len(args) > 2:
+            return await react_remove(args[1], args[2])
+        elif cmd == "group_revoke" and len(args) > 1:
+            return await group_revoke(args[1])
+        elif cmd == "blocklist":
+            return await blocklist_view()
+        elif cmd == "list_msg" and len(args) > 2:
+            parts = " ".join(args[1:]).split("|")
+            phone = parts[0].strip()
+            title = parts[1].strip() if len(parts) > 1 else ""
+            text = parts[2].strip() if len(parts) > 2 else ""
+            options = [p.strip() for p in parts[3:]] if len(parts) > 3 else []
+            return await list_message(phone, title, text, options)
+        elif cmd == "location" and len(args) > 3:
+            try:
+                lat = float(args[2])
+                lng = float(args[3])
+            except ValueError:
+                return "❌ Latitude dan longitude harus angka."
+            return await send_location(args[1], lat, lng)
+        elif cmd == "story":
+            action = args[1] if len(args) > 1 else "list"
+            if action == "list":
+                return await story_list()
+            return await ai_natural_response("Perintah wa story tapi aksinya nggak dikenal", "makasih")
+        elif cmd == "semantic":
+            query = " ".join(args[1:]) if len(args) > 1 else ""
+            if not query:
+                return await ai_natural_response("Semantic search tapi kata kuncinya kosong", "Contoh: !wa semantic bahas liburan")
+            return await semantic_search(query)
+        return await ai_natural_response("Perintah wa nggak dikenal", f"Makasih. Subperintah yang diketik: '{' '.join(args)}'")
 

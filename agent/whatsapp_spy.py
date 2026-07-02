@@ -642,3 +642,245 @@ async def forward_chat(phone: str | None, action: str) -> str:
     if action == "on":
         return f"✅ Forward dari *{phone}* diaktifkan. Pesan baru akan dikirim ke Telegram."
     return f"⏹ Forward dari *{phone}* dimatikan."
+
+
+async def reply_message(phone: str, message_id: str, text: str, quoted_text: str = "") -> str:
+    """Balas pesan WhatsApp."""
+    if not message_id:
+        return "❌ ID pesan harus diisi."
+    if not text:
+        return "❌ Teks balasan kosong."
+    result = await _send_command({
+        "type": "reply", "jid": phone,
+        "message_id": message_id, "text": text,
+        "quoted_text": quoted_text
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal balas: {result['error']}"
+    return f"✅ Balasan terkirim ke {phone}."
+
+
+async def react_message(phone: str, message_id: str, emoji: str = "👍") -> str:
+    """Reaksi ke pesan WhatsApp."""
+    if not message_id:
+        return "❌ ID pesan harus diisi."
+    result = await _send_command({
+        "type": "react", "jid": phone,
+        "message_id": message_id, "emoji": emoji
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal reaksi: {result['error']}"
+    return f"✅ Reaksi {emoji} terkirim ke {phone}."
+
+
+async def send_media(phone: str, file_path: str, media_type: str = "image", caption: str = "") -> str:
+    """Kirim media (image/video/audio/document) ke WhatsApp."""
+    if not os.path.exists(file_path):
+        return f"❌ File tidak ditemukan: {file_path}"
+    result = await _send_command({
+        "type": "send_media", "jid": phone,
+        "file": file_path, "media_type": media_type,
+        "caption": caption
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal kirim media: {result['error']}"
+    return f"✅ Media terkirim ke {phone}."
+
+
+async def mark_read(phone: str, message_id: str | None = None) -> str:
+    """Tandai pesan sebagai sudah dibaca."""
+    cmd = {"type": "read", "jid": phone}
+    if message_id:
+        cmd["message_id"] = message_id
+    result = await _send_command(cmd)
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal mark read: {result['error']}"
+    return f"✅ Pesan di *{phone}* ditandai sudah dibaca."
+
+
+async def typing_indicator(phone: str, action: str = "on") -> str:
+    """Kirim indikator typing/recording."""
+    if action not in ("on", "off", "recording"):
+        return "❌ Gunakan: on (typing), off (stop), recording (voice)"
+    result = await _send_command({
+        "type": "typing", "jid": phone, "action": action
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal: {result['error']}"
+    labels = {"on": "mengetik", "off": "berhenti", "recording": "merekam"}
+    return f"✅ Indikator {labels.get(action, action)} terkirim ke {phone}."
+
+
+async def delete_message(phone: str, message_id: str, for_everyone: bool = True) -> str:
+    """Hapus pesan WhatsApp."""
+    if not message_id:
+        return "❌ ID pesan harus diisi."
+    result = await _send_command({
+        "type": "delete", "jid": phone,
+        "message_id": message_id, "from_me": True,
+        "delete_for": "everyone" if for_everyone else "me"
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal hapus: {result['error']}"
+    return f"✅ Pesan dihapus dari {phone}."
+
+
+async def group_add(phone: str, participants: list[str]) -> str:
+    """Tambah anggota ke grup."""
+    if not participants:
+        return "❌ Daftar peserta harus diisi."
+    p_list = [p if "@" in p else p + "@s.whatsapp.net" for p in participants]
+    result = await _send_command({
+        "type": "group_add", "jid": phone, "participants": p_list
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal tambah anggota: {result['error']}"
+    return f"✅ {len(participants)} anggota ditambahkan ke grup."
+
+
+async def group_remove(phone: str, participants: list[str]) -> str:
+    """Keluarkan anggota dari grup."""
+    if not participants:
+        return "❌ Daftar peserta harus diisi."
+    p_list = [p if "@" in p else p + "@s.whatsapp.net" for p in participants]
+    result = await _send_command({
+        "type": "group_remove", "jid": phone, "participants": p_list
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal keluarkan anggota: {result['error']}"
+    return f"✅ {len(participants)} anggota dikeluarkan dari grup."
+
+
+async def group_promote(phone: str, participants: list[str]) -> str:
+    """Jadikan admin grup."""
+    if not participants:
+        return "❌ Daftar peserta harus diisi."
+    p_list = [p if "@" in p else p + "@s.whatsapp.net" for p in participants]
+    result = await _send_command({
+        "type": "group_promote", "jid": phone, "participants": p_list
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal promote: {result['error']}"
+    return f"✅ {len(participants)} anggota di-promote jadi admin."
+
+
+async def group_demote(phone: str, participants: list[str]) -> str:
+    """Turunkan admin grup."""
+    if not participants:
+        return "❌ Daftar peserta harus diisi."
+    p_list = [p if "@" in p else p + "@s.whatsapp.net" for p in participants]
+    result = await _send_command({
+        "type": "group_demote", "jid": phone, "participants": p_list
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal demote: {result['error']}"
+    return f"✅ {len(participants)} anggota di-demote dari admin."
+
+
+async def group_subject(phone: str, subject: str) -> str:
+    """Ubah nama grup."""
+    if not subject:
+        return "❌ Nama grup harus diisi."
+    result = await _send_command({
+        "type": "group_subject", "jid": phone, "subject": subject
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal ubah nama grup: {result['error']}"
+    return f"✅ Nama grup diubah menjadi: {subject}"
+
+
+async def group_desc(phone: str, description: str) -> str:
+    """Ubah deskripsi grup."""
+    result = await _send_command({
+        "type": "group_desc", "jid": phone, "description": description
+    })
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal ubah deskripsi grup: {result['error']}"
+    return f"✅ Deskripsi grup diubah."
+
+
+async def group_invite(phone: str) -> str:
+    """Dapatkan link undangan grup."""
+    result = await _send_command({"type": "group_invite", "jid": phone})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal dapatkan invite: {result['error']}"
+    code = result.get("invite_code", "")
+    link = result.get("link", "")
+    return f"🔗 *Link Undangan Grup*\nKode: {code}\nLink: {link}"
+
+
+async def group_leave(phone: str) -> str:
+    """Keluar dari grup."""
+    result = await _send_command({"type": "group_leave", "jid": phone})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal keluar grup: {result['error']}"
+    return f"✅ Keluar dari grup."
+
+
+async def group_members(phone: str) -> str:
+    """Daftar anggota grup."""
+    result = await _send_command({"type": "group_members", "jid": phone})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal ambil anggota grup: {result['error']}"
+    subject = result.get("subject", "Grup")
+    participants = result.get("participants", [])
+    if not participants:
+        return f"👥 *{subject}*\nTidak ada data anggota."
+    lines = [f"👥 *{subject}* ({len(participants)} anggota):"]
+    for p in participants:
+        jid = p.get("jid", "?")
+        admin = p.get("admin", "")
+        icon = "👑" if admin else "👤"
+        name = p.get("name", "") or jid
+        lines.append(f"  {icon} {name} ({jid}){' [ADMIN]' if admin else ''}")
+    return "\n".join(lines)
+
+
+async def get_contacts() -> str:
+    """Daftar kontak WhatsApp."""
+    result = await _send_command({"type": "contacts"})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal ambil kontak: {result['error']}"
+    contacts = result.get("contacts", [])
+    if not contacts:
+        return "📖 Tidak ada kontak."
+    lines = [f"📖 *Kontak WhatsApp* ({len(contacts)}):"]
+    for c in contacts:
+        name = c.get("name", "") or c.get("jid", "?")
+        jid = c.get("jid", "")
+        lines.append(f"  👤 {name} — {jid}")
+    return "\n".join(lines)
+
+
+async def block_contact(phone: str) -> str:
+    """Blokir kontak."""
+    result = await _send_command({"type": "block", "jid": phone})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal blokir: {result['error']}"
+    return f"⛔ *{phone}* diblokir."
+
+
+async def unblock_contact(phone: str) -> str:
+    """Buka blokir kontak."""
+    result = await _send_command({"type": "unblock", "jid": phone})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal buka blokir: {result['error']}"
+    return f"✅ *{phone}* dibuka blokirnya."
+
+
+async def get_profile(phone: str) -> str:
+    """Ambil foto profil + status WhatsApp."""
+    result = await _send_command({"type": "profile", "jid": phone})
+    if isinstance(result, dict) and "error" in result:
+        return f"❌ Gagal ambil profil: {result['error']}"
+    lines = [f"👤 *Profil {phone}*"]
+    pic = result.get("picture")
+    if pic:
+        lines.append(f"  🖼 Foto profil: {pic[:100]}")
+    else:
+        lines.append("  🖼 Tidak ada foto profil")
+    status = result.get("status", "")
+    if status:
+        lines.append(f"  📝 Status: {status[:200]}")
+    lines.append(f"  🔗 JID: {phone}@s.whatsapp.net")
+    return "\n".join(lines)

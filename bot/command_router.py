@@ -1057,7 +1057,8 @@ HELP_TEXT = """🤖 <b>Remote Laptop Control — Help</b>
 <b>12. Browser Intel & WhatsApp Spy:</b>
 <code>!steal all|cookies|passwords|cards|autofill|addresses|extensions|sessions|profiles</code> — Extract browser cookies, saved passwords, credit cards, autofill dari Chrome/Firefox
 <code>!browser_history history|bookmarks|downloads [args]</code> — Riwayat browsing, bookmark, download
-<code>!wa check &lt;nomor&gt;</code> — Cek status online/offline WhatsApp
+<code>!wa scan</code> — Tampilkan QR pairing
+<code>!wa check &lt;nomor&gt;</code> — Cek status online/offline
 <code>!wa monitor &lt;nomor&gt; [interval]</code> — Monitor background + notif Telegram
 <code>!wa stop &lt;nomor&gt;</code> — Hentikan monitor
 <code>!wa stop_all</code> — Hentikan semua monitor
@@ -1066,8 +1067,27 @@ HELP_TEXT = """🤖 <b>Remote Laptop Control — Help</b>
 <code>!wa reset</code> — Reset pairing (QR baru)
 <code>!wa messages &lt;nomor&gt; [limit]</code> — Riwayat pesan
 <code>!wa groups</code> — Daftar grup
-<code>!wa send &lt;nomor&gt; &lt;teks&gt;</code> — Kirim pesan
+<code>!wa send &lt;nomor&gt; &lt;teks&gt;</code> — Kirim pesan teks
+<code>!wa send_media &lt;nomor&gt; &lt;file&gt; [type] [caption]</code> — Kirim image/video/audio/document
+<code>!wa reply &lt;nomor&gt; &lt;id&gt; &lt;teks&gt;</code> — Balas pesan spesifik
+<code>!wa react &lt;nomor&gt; &lt;id&gt; [emoji]</code> — Reaksi pesan
+<code>!wa read &lt;nomor&gt; [id]</code> — Tandai sudah dibaca
+<code>!wa typing &lt;nomor&gt; on|off|recording</code> — Indikator mengetik
+<code>!wa delete &lt;nomor&gt; &lt;id&gt;</code> — Hapus pesan
+<code>!wa contacts</code> — Daftar kontak
+<code>!wa block &lt;nomor&gt;</code> — Blokir kontak
+<code>!wa unblock &lt;nomor&gt;</code> — Buka blokir
+<code>!wa profile &lt;nomor&gt;</code> — Foto profil + status
 <code>!wa forward &lt;on|off|status&gt; [nomor]</code> — Forward pesan otomatis ke Telegram
+<code>!wa group_add &lt;grup_id&gt; &lt;nomor&gt; [...]</code> — Tambah anggota grup
+<code>!wa group_remove &lt;grup_id&gt; &lt;nomor&gt; [...]</code> — Keluarkan anggota grup
+<code>!wa group_promote &lt;grup_id&gt; &lt;nomor&gt; [...]</code> — Jadikan admin grup
+<code>!wa group_demote &lt;grup_id&gt; &lt;nomor&gt; [...]</code> — Turunkan admin grup
+<code>!wa group_subject &lt;grup_id&gt; &lt;nama&gt;</code> — Ubah nama grup
+<code>!wa group_desc &lt;grup_id&gt; &lt;deskripsi&gt;</code> — Ubah deskripsi grup
+<code>!wa group_invite &lt;grup_id&gt;</code> — Link undangan grup
+<code>!wa group_members &lt;grup_id&gt;</code> — Daftar anggota grup
+<code>!wa group_leave &lt;grup_id&gt;</code> — Keluar dari grup
 
 <b>Mode AI (jika aktif):</b>
 Ketik perintah natural language langsung untuk diterjemahkan oleh AI. Contoh:

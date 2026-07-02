@@ -3403,6 +3403,11 @@ class CommandHandler:
             check, monitor_start, monitor_stop, monitor_stop_all, monitor_list,
             session_status, reset as wa_reset, scan as wa_scan,
             get_messages, get_groups, send_message, forward_chat,
+            reply_message, react_message, send_media, mark_read,
+            typing_indicator, delete_message,
+            group_add, group_remove, group_promote, group_demote,
+            group_subject, group_desc, group_invite, group_leave, group_members,
+            get_contacts, block_contact, unblock_contact, get_profile,
         )
         if not args:
             return (
@@ -3417,8 +3422,27 @@ class CommandHandler:
                 "`!wa reset` — Reset pairing\n"
                 "`!wa messages <nomor> [limit]` — Riwayat pesan\n"
                 "`!wa groups` — Daftar grup\n"
-                "`!wa send <nomor> <teks>` — Kirim pesan\n"
-                "`!wa forward <on/off/status> [nomor]` — Forward pesan otomatis ke Telegram\n\n"
+                "`!wa send <nomor> <teks>` — Kirim pesan teks\n"
+                "`!wa send_media <nomor> <file> [image/video/audio/document] [caption]` — Kirim media\n"
+                "`!wa reply <nomor> <id_pesan> <teks>` — Balas pesan spesifik\n"
+                "`!wa react <nomor> <id_pesan> [emoji]` — Reaksi pesan\n"
+                "`!wa read <nomor> [id_pesan]` — Tandai sudah dibaca\n"
+                "`!wa typing <nomor> on/off/recording` — Indikator mengetik\n"
+                "`!wa delete <nomor> <id_pesan>` — Hapus pesan\n"
+                "`!wa contacts` — Daftar kontak\n"
+                "`!wa block <nomor>` — Blokir kontak\n"
+                "`!wa unblock <nomor>` — Buka blokir\n"
+                "`!wa profile <nomor>` — Foto profil + status\n"
+                "`!wa forward <on/off/status> [nomor]` — Forward pesan otomatis ke Telegram\n"
+                "`!wa group_add <grup_id> <nomor1> [nomor2...]` — Tambah anggota grup\n"
+                "`!wa group_remove <grup_id> <nomor1> [nomor2...]` — Keluarkan anggota\n"
+                "`!wa group_promote <grup_id> <nomor1> [nomor2...]` — Jadikan admin\n"
+                "`!wa group_demote <grup_id> <nomor1> [nomor2...]` — Turunkan admin\n"
+                "`!wa group_subject <grup_id> <nama>` — Ubah nama grup\n"
+                "`!wa group_desc <grup_id> <deskripsi>` — Ubah deskripsi grup\n"
+                "`!wa group_invite <grup_id>` — Link undangan grup\n"
+                "`!wa group_members <grup_id>` — Daftar anggota grup\n"
+                "`!wa group_leave <grup_id>` — Keluar dari grup\n\n"
                 "Contoh: !wa messages 6281234567890 10"
             )
         cmd = args[0].lower()
@@ -3446,9 +3470,52 @@ class CommandHandler:
             return await get_groups()
         elif cmd == "send" and len(args) > 2:
             return await send_message(args[1], " ".join(args[2:]))
+        elif cmd == "reply" and len(args) > 2:
+            quoted = " ".join(args[3:]) if len(args) > 3 else ""
+            return await reply_message(args[1], args[2], quoted)
+        elif cmd == "react" and len(args) > 2:
+            emoji = args[2] if len(args) > 2 else "👍"
+            return await react_message(args[1], args[2], emoji)
+        elif cmd == "send_media" and len(args) > 2:
+            mtype = args[2] if len(args) > 2 else "image"
+            caption = " ".join(args[3:]) if len(args) > 3 else ""
+            return await send_media(args[1], mtype, caption)
+        elif cmd == "read" and len(args) > 1:
+            msg_id = args[1] if len(args) > 2 else None
+            return await mark_read(args[1], msg_id)
+        elif cmd == "typing" and len(args) > 2:
+            return await typing_indicator(args[1], args[2])
+        elif cmd == "delete" and len(args) > 2:
+            return await delete_message(args[1], args[2])
+        elif cmd == "contacts":
+            return await get_contacts()
+        elif cmd == "block" and len(args) > 1:
+            return await block_contact(args[1])
+        elif cmd == "unblock" and len(args) > 1:
+            return await unblock_contact(args[1])
+        elif cmd == "profile" and len(args) > 1:
+            return await get_profile(args[1])
         elif cmd == "forward":
             action = args[1] if len(args) > 1 else "status"
             phone = args[2] if len(args) > 2 else None
             return await forward_chat(phone, action)
-        return "Gunakan: !wa scan|check|monitor|stop|stop_all|list|status|reset|messages|groups|send|forward"
+        elif cmd == "group_add" and len(args) > 2:
+            return await group_add(args[1], args[2:])
+        elif cmd == "group_remove" and len(args) > 2:
+            return await group_remove(args[1], args[2:])
+        elif cmd == "group_promote" and len(args) > 2:
+            return await group_promote(args[1], args[2:])
+        elif cmd == "group_demote" and len(args) > 2:
+            return await group_demote(args[1], args[2:])
+        elif cmd == "group_subject" and len(args) > 2:
+            return await group_subject(args[1], " ".join(args[2:]))
+        elif cmd == "group_desc" and len(args) > 2:
+            return await group_desc(args[1], " ".join(args[2:]))
+        elif cmd == "group_invite" and len(args) > 1:
+            return await group_invite(args[1])
+        elif cmd == "group_members" and len(args) > 1:
+            return await group_members(args[1])
+        elif cmd == "group_leave" and len(args) > 1:
+            return await group_leave(args[1])
+        return "Gunakan: !wa scan|check|monitor|stop|list|status|reset|messages|groups|send|reply|react|send_media|read|typing|delete|contacts|block|unblock|profile|forward|group_*"
 

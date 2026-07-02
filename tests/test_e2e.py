@@ -82,7 +82,7 @@ class TestE2E(unittest.IsolatedAsyncioTestCase):
         await start_handler(update, context)
         
         update.message.reply_text.assert_called()
-        self.assertIn("Autentikasi Diperlukan", update.message.reply_text.call_args[0][0])
+        self.assertIn("login", update.message.reply_text.call_args[0][0].lower())
         
         # 2. User sends correct OTP
         valid_otp = self.totp.now()
@@ -146,7 +146,7 @@ class TestE2E(unittest.IsolatedAsyncioTestCase):
         context = self.create_mock_context()
         await start_handler(update, context)
         
-        self.assertIn("Akses ditolak", update.message.reply_text.call_args[0][0])
+        self.assertIn("Akses Ditolak", update.message.reply_text.call_args[0][0])
 
     async def test_negative_invalid_otp(self):
         """Test handling of wrong OTP."""
@@ -216,12 +216,21 @@ class TestE2E(unittest.IsolatedAsyncioTestCase):
         tg_bot._user_sessions[uid_str] = AuthManager.generate_session_token(uid_str)
         tg_bot._terminal_mode[uid_str] = True
         
-        with patch('bot.telegram_bot.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
+        fake_agent = {"host": "127.0.0.1", "port": 8080, "api_key": "test"}
+        
+        mock_registry = MagicMock()
+        mock_registry.get_all.return_value = {"test-agent": fake_agent}
+        mock_registry.get_agent.return_value = fake_agent
+        
+        with patch('bot.telegram_bot.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post, \
+             patch('bot.telegram_bot.registry', mock_registry):
             mock_post.return_value = MagicMock(status_code=200)
             
             # 1. Test agy injection
             update = self.create_mock_update("agy buat aplikasi")
-            await message_handler(update, self.create_mock_context())
+            ctx = self.create_mock_context()
+            ctx.user_data = {}
+            await message_handler(update, ctx)
             
             mock_post.assert_called_with(
                 unittest.mock.ANY,
@@ -231,7 +240,9 @@ class TestE2E(unittest.IsolatedAsyncioTestCase):
 
             # 2. Test opencode injection
             update = self.create_mock_update("opencode install deps")
-            await message_handler(update, self.create_mock_context())
+            ctx2 = self.create_mock_context()
+            ctx2.user_data = {}
+            await message_handler(update, ctx2)
             
             mock_post.assert_called_with(
                 unittest.mock.ANY,

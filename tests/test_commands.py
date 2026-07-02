@@ -443,7 +443,7 @@ Balas: `!reboot confirm`""")
         # 1. Test app not found
         mock_which.return_value = None
         res_fail = await self.handler.handle_launch_app("unknown_app")
-        self.assertIn("tidak teridentifikasi di sistem Anda", res_fail)
+        self.assertIn("tidak ditemukan", res_fail)
 
         # 2. Test app found and launched
         mock_which.side_effect = lambda cmd: cmd == "google-chrome"

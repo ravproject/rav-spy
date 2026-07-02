@@ -9,7 +9,7 @@ from pathlib import Path
 from loguru import logger
 from agent.memory.manager import memory_manager
 
-KNOWLEDGE_DIR = Path.home() / ".config" / "rav-remote" / "knowledge"
+KNOWLEDGE_DIR = Path.home() / ".config" / "rav-spy" / "knowledge"
 
 
 class KnowledgeEngine:

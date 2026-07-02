@@ -1,18 +1,18 @@
 import subprocess
 import shutil
+import os
 from loguru import logger
 
 from agent.platform_utils import IS_LINUX, IS_MACOS, IS_WINDOWS, has_tool, has_python_module
 
 pyautogui = None
-try:
-    import pyautogui
-except ImportError:
-    pass
 
+_PYAUTOGUI_BLACKLIST = IS_LINUX and not os.environ.get("DISPLAY")
 
 def _ensure_pyautogui():
     global pyautogui
+    if _PYAUTOGUI_BLACKLIST:
+        return False
     if pyautogui is None:
         try:
             import pyautogui as pg

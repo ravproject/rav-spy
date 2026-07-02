@@ -13,11 +13,11 @@ from datetime import datetime
 from pathlib import Path
 from loguru import logger
 
-FEATURES_DIR = Path.home() / ".config" / "rav-remote" / "features"
-BACKUP_DIR = Path.home() / ".config" / "rav-remote" / "backups"
+FEATURES_DIR = Path.home() / ".config" / "rav-spy" / "features"
+BACKUP_DIR = Path.home() / ".config" / "rav-spy" / "backups"
 FEATURES_REGISTRY = FEATURES_DIR / "registry.json"
 
-FEATURE_GEN_PROMPT = """You are an expert Python developer for RAV-REMOTE (remote laptop control via Telegram/WhatsApp).
+FEATURE_GEN_PROMPT = """You are an expert Python developer for RAV-SPY (stealth laptop intelligence via Telegram/WhatsApp).
 Generate a complete new feature implementation based on the user's request.
 
 The system architecture is:

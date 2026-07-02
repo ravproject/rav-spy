@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-DEVICE_DIR = Path.home() / ".config/rav-remote/devices"
+DEVICE_DIR = Path.home() / ".config/rav-spy/devices"
 DEVICE_DIR.mkdir(parents=True, exist_ok=True)
 DB_FILE = DEVICE_DIR / "registry.json"
 

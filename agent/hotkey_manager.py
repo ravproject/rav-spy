@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from loguru import logger
 
-HOTKEY_DIR = Path.home() / ".config" / "rav-remote" / "hotkeys"
+HOTKEY_DIR = Path.home() / ".config" / "rav-spy" / "hotkeys"
 
 class HotkeyManager:
     def __init__(self):

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from loguru import logger
 
-ALIAS_FILE = Path.home() / ".config" / "rav-remote" / "aliases.json"
+ALIAS_FILE = Path.home() / ".config" / "rav-spy" / "aliases.json"
 
 class AliasManager:
     def __init__(self):

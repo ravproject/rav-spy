@@ -12,7 +12,7 @@ from datetime import datetime
 from loguru import logger
 from agent.input_simulator import simulate_click, simulate_type, simulate_press
 
-MACRO_DIR = Path.home() / ".config" / "rav-remote" / "macros"
+MACRO_DIR = Path.home() / ".config" / "rav-spy" / "macros"
 
 class MacroManager:
     def __init__(self):

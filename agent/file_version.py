@@ -9,7 +9,7 @@ from pathlib import Path
 from datetime import datetime
 from loguru import logger
 
-VERSION_DIR = Path.home() / ".config" / "rav-remote" / "versions"
+VERSION_DIR = Path.home() / ".config" / "rav-spy" / "versions"
 VERSION_INDEX = VERSION_DIR / "index.json"
 
 class FileVersionManager:

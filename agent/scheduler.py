@@ -10,7 +10,7 @@ from pathlib import Path
 from datetime import datetime, timedelta, date
 from loguru import logger
 
-SCHEDULE_FILE = Path.home() / ".config" / "rav-remote" / "schedules.json"
+SCHEDULE_FILE = Path.home() / ".config" / "rav-spy" / "schedules.json"
 
 scheduled_alerts: list = []
 scheduled_files: list = []

@@ -24,7 +24,7 @@ from loguru import logger
 # ---------------------------------------------------------------------------
 # Cache
 # ---------------------------------------------------------------------------
-CACHE_DIR = Path.home() / ".config" / "rav-remote" / "scraper_cache"
+CACHE_DIR = Path.home() / ".config" / "rav-spy" / "scraper_cache"
 CACHE_TTL = 6 * 3600
 
 def _cache_key(url: str) -> str:

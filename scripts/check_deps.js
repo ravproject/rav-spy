@@ -138,7 +138,7 @@ async function checkPythonDeps(root) {
 
 async function main() {
   console.log(`${COLOR.cyan}══════════════════════════════════════${COLOR.reset}`);
-  console.log(`${COLOR.cyan}  RAV-REMOTE — Dependency Checker${COLOR.reset}`);
+  console.log(`${COLOR.cyan}  RAV-SPY — Dependency Checker${COLOR.reset}`);
   console.log(`${COLOR.cyan}══════════════════════════════════════${COLOR.reset}`);
   console.log();
 

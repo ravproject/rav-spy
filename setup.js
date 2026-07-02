@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Setup rav-remote — mode Hub (Telegram + bot) atau Agent (komputer tambahan).
+ * Setup rav-spy — mode Hub (Telegram + bot) atau Agent (komputer tambahan).
  *
  * Usage:
  *   npm run setup              # wizard interaktif
  *   npm run setup:hub          # mode hub
  *   npm run setup:agent        # mode agent (paste kode pairing)
- *   node setup.js --agent --pair=RAV1.xxxxx
+ *   node setup.js --agent --pair=SPY1.xxxxx
  */
 
 const readline = require('readline');
@@ -19,7 +19,7 @@ const crypto = require('crypto');
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (q) => new Promise((resolve) => rl.question(q, resolve));
 
-const PAIR_PREFIX = 'RAV1.';
+const PAIR_PREFIX = 'SPY1.';
 
 function parseArgs(argv) {
   const args = { mode: null, pair: null };
@@ -89,7 +89,7 @@ function encodePairingCode(payload) {
 function decodePairingCode(code) {
   const trimmed = code.trim();
   if (!trimmed.startsWith(PAIR_PREFIX)) {
-    throw new Error('Kode pairing harus diawali RAV1.');
+    throw new Error('Kode pairing harus diawali SPY1.');
   }
   const raw = trimmed.slice(PAIR_PREFIX.length);
   return JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'));
@@ -193,7 +193,7 @@ async function setupAgent(absoluteTargetDir, existingEnv, cliPair) {
 
   let pairCode = cliPair;
   if (!pairCode) {
-    pairCode = await question('Paste kode pairing (RAV1....): ');
+    pairCode = await question('Paste kode pairing (SPY1....): ');
   }
 
   let payload;
@@ -260,7 +260,7 @@ async function main() {
   const cli = parseArgs(process.argv.slice(2));
 
   console.log('===========================================');
-  console.log('🚀 rav-remote Setup');
+  console.log('🚀 RAV-SPY Setup');
   console.log('===========================================');
 
   const targetFolder =

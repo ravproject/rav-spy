@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from loguru import logger
 
-REMINDER_FILE = Path.home() / ".config" / "rav-remote" / "reminders.json"
+REMINDER_FILE = Path.home() / ".config" / "rav-spy" / "reminders.json"
 
 class ReminderManager:
     def __init__(self):
@@ -93,7 +93,7 @@ def check_reminders():
             reminder_alerts.append(f"⏰ Pengingat: {text}")
             try:
                 from agent.notifier import send_notification
-                if not send_notification("RAV-REMOTE Reminder", text):
+                if not send_notification("RAV-SPY Reminder", text):
                     logger.warning(f"Desktop notification failed for reminder: {text}")
             except Exception as e:
                 logger.warning(f"Desktop notification error for reminder '{text}': {e}")

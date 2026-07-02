@@ -2,7 +2,7 @@ import json
 import subprocess
 from pathlib import Path
 
-HISTORY_DIR = Path.home() / ".config/rav-remote/aiagent"
+HISTORY_DIR = Path.home() / ".config/rav-spy/aiagent"
 HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 HISTORY_FILE = HISTORY_DIR / "history.json"
 

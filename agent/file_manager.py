@@ -70,12 +70,12 @@ def save_file(filename: str, content: bytes) -> str:
         if not safe_name:
             return "❌ Nama file tidak valid."
         
-        save_dir = Path.home() / "Downloads" / "rav-remote"
+        save_dir = Path.home() / "Downloads" / "rav-spy"
         save_dir.mkdir(parents=True, exist_ok=True)
         
         target_path = save_dir / safe_name
         
-        # Security check: Ensure we stay within Downloads/rav-remote
+        # Security check: Ensure we stay within Downloads/rav-spy
         if not target_path.resolve().is_relative_to(save_dir.resolve()):
             return "❌ Path traversal terdeteksi."
 

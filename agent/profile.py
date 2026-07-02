@@ -3,7 +3,7 @@ import subprocess
 import shutil
 from pathlib import Path
 
-PROFILE_DIR = Path.home() / ".config/rav-remote/profiles"
+PROFILE_DIR = Path.home() / ".config/rav-spy/profiles"
 PROFILE_DIR.mkdir(parents=True, exist_ok=True)
 DB_FILE = PROFILE_DIR / "profiles.json"
 ACTIVE_FILE = PROFILE_DIR / "active.txt"

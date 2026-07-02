@@ -38,7 +38,7 @@ class CryptoManager:
         key = hashlib.pbkdf2_hmac(
             'sha256',
             secret.encode(),
-            b'rav-remote-salt-v1',
+            b'rav-spy-salt-v1',
             iterations=100_000
         )
         return base64.urlsafe_b64encode(key)

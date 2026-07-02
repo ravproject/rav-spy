@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Unified Runner for rav-remote (Agent & Bots)
+ * Unified Runner for rav-spy (Agent & Bots)
  */
 
 const fs = require('fs');
@@ -60,7 +60,7 @@ async function main() {
 }
 
 function startApp() {
-  logSystem("Memulai komponen rav-remote...");
+  logSystem("Memulai komponen rav-spy...");
 
   // Load environment variables using dotenv
   try {
@@ -177,4 +177,3 @@ function startApp() {
 }
 
 main();
-// Trigger restart nodemon

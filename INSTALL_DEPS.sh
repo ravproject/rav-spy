@@ -2,7 +2,7 @@
 set -e
 
 echo "============================================"
-echo "  RAV-REMOTE — Install Semua Dependencies"
+echo "  RAV-SPY — Install Semua Dependencies"
 echo "============================================"
 echo ""
 

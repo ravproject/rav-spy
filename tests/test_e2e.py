@@ -1,5 +1,5 @@
 """
-End-to-End tests for RAV-REMOTE.
+End-to-End tests for RAV-SPY.
 Simulates user interaction with the Telegram bot and subsequent agent execution.
 Covers Positive and Negative cases.
 """

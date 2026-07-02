@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from loguru import logger
 
-EVOLUTION_LOG = Path.home() / ".config" / "rav-remote" / "evolution" / "log.json"
+EVOLUTION_LOG = Path.home() / ".config" / "rav-spy" / "evolution" / "log.json"
 
 
 class EvolutionEngine:

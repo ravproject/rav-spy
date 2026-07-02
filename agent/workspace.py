@@ -10,7 +10,7 @@ from loguru import logger
 
 from agent.platform_utils import IS_LINUX, IS_MACOS, IS_WINDOWS, has_tool, run_cmd
 
-WORKSPACE_DIR = Path.home() / ".config" / "rav-remote" / "workspaces"
+WORKSPACE_DIR = Path.home() / ".config" / "rav-spy" / "workspaces"
 
 KNOWN_GUI_APPS = {
     "nautilus", "org.gnome.Nautilus",
@@ -179,9 +179,9 @@ class WorkspaceManager:
             if comm in ("sh", "bash", "zsh", "fish", "dash"):
                 continue
 
-            if "rav-remote" in raw.lower() or "venv/bin/python" in raw.lower():
+            if "rav-spy" in raw.lower() or "venv/bin/python" in raw.lower():
                 continue
-            if "run.js" in raw.lower() and "/rav-remote" in raw.lower():
+            if "run.js" in raw.lower() and "/rav-spy" in raw.lower():
                 continue
 
             if raw.startswith("/usr/libexec/"):

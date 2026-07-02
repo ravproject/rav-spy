@@ -472,6 +472,10 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE, ov
     # Determine Active Agent
     active_agent_id = _user_active_agent.get(user_id)
     agents = registry.get_all()
+    # Retry once if no agent registered yet (Agent might still be starting up)
+    if not agents:
+        await asyncio.sleep(3)
+        agents = registry.get_all()
     if not active_agent_id:
         if len(agents) == 1:
             active_agent_id = list(agents.keys())[0]

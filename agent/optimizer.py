@@ -13,7 +13,7 @@ class Optimizer:
         lines = ["📊 *Usage Optimization Advice*"]
 
         if total == 0:
-            lines.append("\nBelum ada data penggunaan. Mulai gunakan fitur RAV-REMOTE!")
+            lines.append("\nBelum ada data penggunaan. Mulai gunakan fitur RAV-SPY!")
             return "\n".join(lines)
 
         if peak:

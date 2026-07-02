@@ -1,4 +1,4 @@
-# RAV-REMOTE AI: Implementation Plan for 50 New Features
+# RAV-SPY AI: Implementation Plan for 50 New Features
 
 > **Document Version:** 1.0
 > **Architecture:** Python 3.11+ / Node.js 20+ (WhatsApp)
@@ -217,7 +217,7 @@ class FocusManager:
         """Mute D-Bus notifications on Linux."""
         try:
             if mute:
-                subprocess.run(["notify-send", "RAV-REMOTE", "Focus Mode: Notifications silenced"], timeout=3)
+                subprocess.run(["notify-send", "RAV-SPY", "Focus Mode: Notifications silenced"], timeout=3)
                 subprocess.run(["gsettings", "set", "org.gnome.desktop.notifications", "show-banners", "false"], capture_output=True)
             else:
                 subprocess.run(["gsettings", "set", "org.gnome.desktop.notifications", "show-banners", "true"], capture_output=True)
@@ -294,7 +294,7 @@ Save/restore state:
 - Browser tabs (via browser extension or `chrome://json` endpoint)
 - VSCode workspace state
 - Shell sessions, terminal directories
-- Stored as JSON in `~/.config/rav-remote/workspaces/<name>.json`
+- Stored as JSON in `~/.config/rav-spy/workspaces/<name>.json`
 
 ```python
 """
@@ -308,7 +308,7 @@ from pathlib import Path
 from datetime import datetime
 from loguru import logger
 
-WORKSPACE_DIR = Path.home() / ".config" / "rav-remote" / "workspaces"
+WORKSPACE_DIR = Path.home() / ".config" / "rav-spy" / "workspaces"
 
 class WorkspaceManager:
     def __init__(self):
@@ -393,7 +393,7 @@ elif command_name == "workspace":
 **New file:** `agent/calendar_client.py`
 
 - Google Calendar API with OAuth2
-- Token stored in `~/.config/rav-remote/calendar_token.json`
+- Token stored in `~/.config/rav-spy/calendar_token.json`
 - Commands: `today`, `next`, `list`, `join`, `create`
 - `join` extracts Meet/Zoom link from event and opens it via `!open`
 
@@ -459,7 +459,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from loguru import logger
 
-REMINDER_FILE = Path.home() / ".config" / "rav-remote" / "reminders.json"
+REMINDER_FILE = Path.home() / ".config" / "rav-spy" / "reminders.json"
 
 class ReminderManager:
     def __init__(self):
@@ -555,7 +555,7 @@ Custom command aliases — user-defined shortcuts.
 import json
 from pathlib import Path
 
-ALIAS_FILE = Path.home() / ".config" / "rav-remote" / "aliases.json"
+ALIAS_FILE = Path.home() / ".config" / "rav-spy" / "aliases.json"
 
 class AliasManager:
     def __init__(self):
@@ -655,7 +655,7 @@ import threading
 from pathlib import Path
 from loguru import logger
 
-MACRO_DIR = Path.home() / ".config" / "rav-remote" / "macros"
+MACRO_DIR = Path.home() / ".config" / "rav-spy" / "macros"
 
 class MacroRecorder:
     def __init__(self):
@@ -773,7 +773,7 @@ _voice_enabled: dict[str, bool] = {}
 
 - `!sync <folder> <service>` — Sync folder with Google Drive / OneDrive / local backup
 - Uses `rclone` if installed, or `rsync` for local
-- Configuration stored in `~/.config/rav-remote/sync.json`
+- Configuration stored in `~/.config/rav-spy/sync.json`
 
 ### 5.2 Quick Upload (`!quick upload`)
 
@@ -813,7 +813,7 @@ async def handle_recent(self, args: list[str]) -> str:
 **New file:** `agent/backup_manager.py`
 - `!backup <folder> quick` — rsync to backup location
 - `!backup <folder> full` — tar.gz archive with timestamp
-- Config: `~/.config/rav-remote/backup.json`
+- Config: `~/.config/rav-spy/backup.json`
 
 ### 5.7 Organize (`!organize`)
 
@@ -833,7 +833,7 @@ async def handle_recent(self, args: list[str]) -> str:
 
 **New file:** `agent/local_version.py`
 - `!version status <file>` — Show version history
-- `!version commit <file> "message"` — Save snapshot to `~/.config/rav-remote/versions/`
+- `!version commit <file> "message"` — Save snapshot to `~/.config/rav-spy/versions/`
 - `!version history <file>` — List versions
 - `!version revert <file> <N>` — Restore version
 - Simple copy-based versioning (no git dependency)
@@ -946,7 +946,7 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-TRACKER_FILE = Path.home() / ".config" / "rav-remote" / "time_tracker.json"
+TRACKER_FILE = Path.home() / ".config" / "rav-spy" / "time_tracker.json"
 
 class TimeTracker:
     def __init__(self):

@@ -6,7 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from loguru import logger
 
-ANALYTICS_FILE = Path.home() / ".config" / "rav-remote" / "analytics" / "usage.json"
+ANALYTICS_FILE = Path.home() / ".config" / "rav-spy" / "analytics" / "usage.json"
 
 
 class UsageAnalytics:

@@ -11,7 +11,7 @@ from loguru import logger
 
 from agent.platform_utils import IS_LINUX, IS_MACOS, IS_WINDOWS, get_platform_paths
 
-UPLOAD_DIR = Path.home() / "Downloads" / "rav-remote"
+UPLOAD_DIR = Path.home() / "Downloads" / "rav-spy"
 
 def quick_upload() -> str:
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)

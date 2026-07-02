@@ -1,7 +1,7 @@
-# Protokol Pendaftaran Fitur Baru (RAV-REMOTE)
+# Protokol Pendaftaran Fitur Baru (RAV-SPY)
 
 ## 1. Tujuan
-Dokumen ini dibuat untuk memastikan setiap fitur baru yang ditambahkan ke **RAV-REMOTE** terdaftar secara resmi di seluruh lapisan sistem. Hal ini mencegah terjadinya error "Input Tidak Valid" atau "Command Blocked" karena sistem keamanan (Sanitizer) tidak mengenali perintah tersebut.
+Dokumen ini dibuat untuk memastikan setiap fitur baru yang ditambahkan ke **RAV-SPY** terdaftar secara resmi di seluruh lapisan sistem. Hal ini mencegah terjadinya error "Input Tidak Valid" atau "Command Blocked" karena sistem keamanan (Sanitizer) tidak mengenali perintah tersebut.
 
 ## 2. Alur Wajib Penambahan Fitur
 Setiap kali menambahkan atau mengubah perintah (command), pengembang (AI/Manusia) **WAJIB** mengikuti checklist berikut:

@@ -1,7 +1,7 @@
 .PHONY: restart-agent restart-bot restart-all status-agent status-bot status log-agent log-bot log install
 
-AGENT_SERVICE = rav-agent.service
-BOT_SERVICE = rav-bot.service
+AGENT_SERVICE = rav-spy-agent.service
+BOT_SERVICE = rav-spy-bot.service
 
 restart-agent:
 	systemctl --user restart $(AGENT_SERVICE)
@@ -39,6 +39,6 @@ log:
 	journalctl --user -u $(AGENT_SERVICE) -u $(BOT_SERVICE) -n 50 -f
 
 install:
-	cp deploy/rav-agent.service deploy/rav-bot.service ~/.config/systemd/user/
+	cp deploy/rav-spy-agent.service deploy/rav-spy-bot.service ~/.config/systemd/user/
 	systemctl --user daemon-reload
-	@echo "Done. Run: systemctl --user enable rav-agent rav-bot"
+	@echo "Done. Run: systemctl --user enable rav-spy-agent rav-spy-bot"

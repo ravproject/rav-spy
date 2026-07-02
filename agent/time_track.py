@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from datetime import datetime, timedelta
 
-DATA_DIR = Path.home() / ".config/rav-remote/timetrack"
+DATA_DIR = Path.home() / ".config/rav-spy/timetrack"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_FILE = DATA_DIR / "sessions.json"
 

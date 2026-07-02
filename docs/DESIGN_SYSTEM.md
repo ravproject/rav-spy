@@ -1,7 +1,7 @@
-# RAV-REMOTE Design System & Architecture
+# RAV-SPY Design System & Architecture
 
 ## 1. Overview
-RAV-REMOTE is a high-performance remote laptop control system designed for Ubuntu (Wayland/X11). It prioritizes user comfort (Zero-Flash), system stability, and security.
+RAV-SPY is a high-performance stealth laptop intelligence system designed for Ubuntu (Wayland/X11). It prioritizes user comfort (Zero-Flash), system stability, and security.
 
 ## 2. Core Features
 

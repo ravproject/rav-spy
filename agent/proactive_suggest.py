@@ -19,7 +19,7 @@ class ProactiveSuggester:
 
         if suggestions:
             return suggestions
-        return "Belum cukup data untuk saran. Gunakan lebih banyak fitur RAV-REMOTE!"
+        return "Belum cukup data untuk saran. Gunakan lebih banyak fitur RAV-SPY!"
 
     async def _gather_context(self) -> str:
         try:
@@ -37,7 +37,7 @@ class ProactiveSuggester:
         if not self.nim_api_key:
             return f"📊 *Pola Penggunaan:*\n{context[:1000]}"
 
-        prompt = f"""Kamu adalah asisten yang menganalisis pola penggunaan fitur RAV-REMOTE.
+        prompt = f"""Kamu adalah asisten yang menganalisis pola penggunaan fitur RAV-SPY.
 
 Data penggunaan:
 {context}
@@ -45,7 +45,7 @@ Data penggunaan:
 Tugasmu:
 1. Analisis fitur apa yang paling sering digunakan
 2. Identifikasi pola atau kebiasaan user
-3. Rekomendasikan 2-3 fitur RAV-REMOTE yang relevan
+3. Rekomendasikan 2-3 fitur RAV-SPY yang relevan
 4. Jelaskan mengapa fitur itu berguna untuk user
 5. Gunakan bahasa Indonesia
 

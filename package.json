@@ -1,14 +1,14 @@
 {
-  "name": "@ravproject/rav-remote",
-  "version": "1.0.4",
-  "description": "Remote Laptop Control via Telegram/WhatsApp",
+  "name": "@ravproject/rav-spy",
+  "version": "2.0.0",
+  "description": "Stealth Laptop Intelligence via Telegram/WhatsApp",
   "type": "commonjs",
   "bin": {
-    "rav-remote": "run.js"
+    "rav-spy": "run.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ravproject/rav-remote.git"
+    "url": "git+https://github.com/ravproject/rav-spy.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -19,7 +19,7 @@
     "setup:hub": "node setup.js --hub",
     "setup:agent": "node setup.js --agent",
     "whatsapp": "node run.js --whatsapp",
-    "dev": "nodemon -e js,json,py,yaml,env run.js",
+    "dev": "nodemon --ignore venv/ -e js,json,py,yaml,env run.js",
     "check-deps": "node scripts/check_deps.js",
     "postinstall": "node scripts/check_deps.js"
   },

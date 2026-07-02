@@ -1,4 +1,4 @@
-# RAV-REMOTE Internet Omniscient — Implementation Plan
+# RAV-SPY Internet Omniscient — Implementation Plan
 
 > **Fitur Kecerdasan Internet yang Mendalam**  
 > Versi: 1.0 — 25 Juni 2026  
@@ -7,7 +7,7 @@
 
 ## 1. Visi
 
-Menjadikan RAV-REMOTE AI sebagai **AI dengan pengetahuan hampir segalanya di internet** — mampu riset mendalam, verifikasi fakta, deteksi tren, dan eksekusi web action, semuanya terintegrasi dengan Long-Term Memory + remote control laptop.
+Menjadikan RAV-SPY AI sebagai **AI dengan pengetahuan hampir segalanya di internet** — mampu riset mendalam, verifikasi fakta, deteksi tren, dan eksekusi web action, semuanya terintegrasi dengan Long-Term Memory + remote control laptop.
 
 ---
 
@@ -345,7 +345,7 @@ config/allowed_commands.yaml → +2 entries: fitur + alias
 ## 11. File Structure (Final)
 
 ```
-rav-remote/
+rav-spy/
 ├── agent/
 │   ├── internet_brain.py       ← PHASE 1
 │   ├── live_web.py             ← PHASE 1

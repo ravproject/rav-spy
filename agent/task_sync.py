@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 
-TASK_FILE = Path.home() / ".config" / "rav-remote" / "tasks.json"
+TASK_FILE = Path.home() / ".config" / "rav-spy" / "tasks.json"
 
 class TaskManager:
     def __init__(self):
@@ -34,7 +34,7 @@ class TaskManager:
             "done": False,
             "created": datetime.now().isoformat(),
             "deadline": deadline,
-            "source": "rav-remote"
+            "source": "rav-spy"
         }
         self.tasks.append(task)
         self._save()

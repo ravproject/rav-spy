@@ -1,6 +1,6 @@
 """
 MemoryStore — ChromaDB persistent vector store.
-Lokasi: ~/.config/rav-remote/memory/chroma/
+Lokasi: ~/.config/rav-spy/memory/chroma/
 """
 import os
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Optional
 from loguru import logger
 
-CHROMA_DIR = Path.home() / ".config" / "rav-remote" / "memory" / "chroma"
+CHROMA_DIR = Path.home() / ".config" / "rav-spy" / "memory" / "chroma"
 INDEX_FILE = CHROMA_DIR.parent / "index.json"
 COLLECTION_NAME = "rav_memory"
 

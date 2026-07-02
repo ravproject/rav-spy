@@ -1,5 +1,5 @@
 """
-Fleet pairing — generate/apply kode RAV1.* untuk hindari setup .env manual per mesin.
+Fleet pairing — generate/apply kode SPY1.* untuk hindari setup .env manual per mesin.
 """
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import secrets
 import socket
 from pathlib import Path
 
-PAIR_PREFIX = "RAV1."
+PAIR_PREFIX = "SPY1."
 
 
 def detect_lan_ip() -> str:
@@ -39,7 +39,7 @@ def encode_pairing_code(payload: dict) -> str:
 def decode_pairing_code(code: str) -> dict:
     trimmed = code.strip()
     if not trimmed.startswith(PAIR_PREFIX):
-        raise ValueError("Kode pairing harus diawali RAV1.")
+        raise ValueError("Kode pairing harus diawali SPY1.")
     raw = trimmed[len(PAIR_PREFIX) :]
     import base64
 

@@ -1,6 +1,6 @@
 """
 Calendar Client — Google Calendar integration.
-Stores OAuth token in ~/.config/rav-remote/calendar_token.json
+Stores OAuth token in ~/.config/rav-spy/calendar_token.json
 
 Dependencies: google-api-python-client, google-auth-httplib2, google-auth-oauthlib
 """
@@ -8,7 +8,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from loguru import logger
 
-CALENDAR_TOKEN_DIR = Path.home() / ".config" / "rav-remote"
+CALENDAR_TOKEN_DIR = Path.home() / ".config" / "rav-spy"
 CALENDAR_TOKEN_FILE = CALENDAR_TOKEN_DIR / "calendar_token.json"
 CALENDAR_CRED_FILE = CALENDAR_TOKEN_DIR / "credentials.json"
 

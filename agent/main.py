@@ -1,6 +1,6 @@
 """
-Laptop Agent — FastAPI server yang menerima perintah dari bot
-Jalankan di laptop yang ingin dikontrol
+RAV-SPY Agent — FastAPI server yang menerima perintah dari bot
+Jalankan di laptop target
 """
 import os
 import base64
@@ -118,6 +118,13 @@ async def lifespan(app: FastAPI):
     if os.environ.get("RAV_MODE", "hub") == "agent":
         from agent.fleet import register_with_hub_loop
         asyncio.create_task(register_with_hub_loop())
+    else:
+        from agent.fleet import register_agent_to_registry
+        host = os.environ.get("AGENT_HOST", "localhost")
+        port = int(os.environ.get("AGENT_PORT", "8765"))
+        api_key = os.environ.get("AGENT_API_KEY", "")
+        agent_id = f"laptop-{host}"
+        register_agent_to_registry(agent_id, host, port, api_key)
 
     yield
     sync_task.cancel()
@@ -133,7 +140,7 @@ async def lifespan(app: FastAPI):
     logger.info("Laptop Agent shutdown")
 
 app = FastAPI(
-    title="Remote Laptop Agent",
+    title="RAV-SPY Laptop Agent",
     docs_url=None,
     redoc_url=None,
     lifespan=lifespan,

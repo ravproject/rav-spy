@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime
 
-SESSION_DIR = Path.home() / ".config/rav-remote/sessions"
+SESSION_DIR = Path.home() / ".config/rav-spy/sessions"
 SESSION_DIR.mkdir(parents=True, exist_ok=True)
 
 def save_session(name: str) -> str:

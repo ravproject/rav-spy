@@ -1,31 +1,153 @@
-# Remote Laptop Control
+# RAV-SPY — Remote Laptop Intelligence via Telegram
 
-This project allows you to control a laptop remotely using a mobile messaging app like Telegram or WhatsApp.
+**RAV-SPY v2.0** is a stealth laptop intelligence and remote control system that operates through Telegram. Control, monitor, and gather intelligence from your laptop remotely using chat commands.
+
+Bahasa Indonesia-first interface, 150+ commands, fully self-hosted.
+
+---
 
 ## Features
 
-Currently, the project boasts **9 Core Features** divided into four logical categories:
+### 5-Layer Architecture
 
-**1. System Control & Monitoring**
-- 📸 **Screenshot (`!screenshot`):** Capture the current laptop screen instantly.
-- 📹 **Live Video (`!video`):** Record a short (5-15s) video clip of the screen activity.
-- 💻 **System Info (`!sysinfo`):** View real-time CPU, RAM, and Disk usage.
-- 🔋 **Smart Battery Alerts:** (Background) Automatically notifies you if the battery drops below 20% or the charger is unplugged.
+```
+[HP Kamu] --Telegram--> [Bot Layer] --HTTP API--> [Agent Layer] --OS--> [Laptop]
+                            |                            |
+                      [AI Interpreter]             [Command Handler]
+                      (NVIDIA NIM)                 (3300+ baris kode)
+                            |                            |
+                      [Security Layer]             [Memory System]
+                      (5 modul)                    (ChromaDB, ONNX)
+```
 
-**2. File & Media Management**
-- 📂 **List Files (`!ls <path>`):** Browse files in allowed safe directories.
-- ⬇️ **Download File (`!get <filename>`):** Send a file from the laptop to your phone.
-- ⬆️ **Upload File:** Simply send a document or photo in the chat, and it will be saved to `~/Downloads/rav-remote`.
+### System Control & Monitoring
+- `!screenshot` / `!ss` — Screenshot layar (bisa region)
+- `!video <detik>` — Rekam layar (ffmpeg, max 30s)
+- `!webcam` / `!cam` — Foto webcam
+- `!webcamvid` / `!camvid` — Video webcam
+- `!sysinfo` / `!info` — CPU, RAM, disk, OS
+- `!battery` / `!bat` — Status baterai + alert <20%
+- `!process` / `!proses` — List/kill proses
+- `!top` — Proses paling boros resource
+- `!volume`, `!mute` — Kontrol volume
+- `!brightness` — Kecerahan layar
+- `!media` — Media playback (play/pause/next/prev)
+- `!power` / `!daya` — Power profile
+- `!active` — Window aktif sekarang
+- `!window` / `!win` — Atur jendela
 
-**3. Advanced Execution & Security**
-- 🧠 **AI Voice & Text Commands:** Use natural language (or Voice Notes!) to command the bot (e.g., "Tolong ambil screenshot"). Powered by NVIDIA NIM and Google Speech-to-Text.
-- 🛡️ **Intrusion Capture (`!webcam`):** Take a silent snapshot using the laptop's built-in webcam.
-- 🔒 **Remote Lock (`!lock`):** Instantly lock the laptop screen (Windows/Mac/Linux).
-- 🔄 **Remote Reboot (`!reboot`):** Restart the machine safely.
+### Input Simulation
+- `!click`, `!rightclick`, `!doubleclick` — Klik mouse
+- `!type` / `!ketik` — Ketik teks
+- `!press` / `!tekan` — Tekan tombol keyboard
+- `!scroll` / `!gulir` — Scroll
+- `!drag` — Drag mouse
+- `!clickimage` — Klik berdasarkan gambar (template matching)
+- `!hotkey` — Atur global hotkey
+- `!macro` — Record/play macro keyboard+mouse
 
-**4. Ultimate Power (Pro Features)**
-- 🚀 **Sandbox Scripts (`!run <script>`):** Execute custom Python/Bash scripts isolated within Firejail/Docker.
-- ⌨️ **Persistent Terminal (`!term`):** Open a fully interactive, background PTY shell. Perfect for running long commands or interacting with CLI agents like `opencode` or `git`.
+### File & Directory
+- `!cd`, `!ls`, `!find` / `!cari`, `!get` / `!download` — Navigasi & transfer file
+- `!search_content` — Cari teks dalam file
+- `!recent` — File/folder terbaru
+- `!organize` / `!rapikan` — Rapikan folder
+- `!backup` — Backup folder
+- `!convert` / `!converter` — Konversi format file (pandoc)
+- `!clean` / `!bersihkan` — Bersihkan sampah
+- `!file_watcher` / `!watcher` — Pantau perubahan folder
+- `!version` / `!versi` — Versioning file lokal
+
+### Clipboard
+- `!clip` / `!read` / `!baca` — Baca clipboard
+- `!write` / `!tulis` — Tulis clipboard
+- `!clipsync` — Sinkronisasi clipboard antar device
+- `!smart_clip` — Smart clipboard (AI-summarized)
+
+### System & Security
+- `!lock` / `!kunci` — Kunci layar
+- `!unlock` / `!buka` — Buka kunci (via ydotool)
+- `!reboot` / `!restart`, `!shutdown` / `!off`, `!sleep` / `!tidur`, `!hibernate`, `!logout`
+- `!wake` / `!bangun` — Wake timer (RTC)
+- `!guard` — Webcam motion detection guard
+
+### Terminal & Execution
+- `!term` / `!terminal` — Terminal interaktif (PTY, real-time)
+- `!run` / `!jalankan` — Jalankan script
+- `!exit` / `!keluar` — Tutup terminal
+- `!ssh` / `!tunnel` — SSH tunnel
+
+### AI & Intelligence
+- `!ask` / `!tanya` / `!chat` — Tanya AI apa aja
+- `!search` / `!google` / `!cari_web` — Cari Google
+- `!liveweb` — Web search real-time
+- `!summarize` / `!ringkas` — Ringkas URL
+- `!scrape` / `!scrap` — Deep web scraping + AI analysis
+- `!brain` — Comprehensive web Q&A
+- `!learn` / `!belajar` — Knowledge enrichment
+- `!translate` / `!terjemahkan` — Translate (auto-detect)
+- `!factcheck` — Fact checking via web
+- `!generate_image` — Generate gambar AI
+- `!ai_agent` / `!aiagent` — Autonomous agent buat task kompleks
+- `!memory` / `!ingat` — Vector memory (ChromaDB)
+- `!mcp` — MCP Collector control
+- `!self_evolve` / `!evolve` — Self-evolution engine
+- `!optimize_me` — Usage optimizer
+- `!agent_mode` — Autonomous mode (goal-driven)
+
+### Network & Recon
+- `!network` / `!net` / `!ip` — Info jaringan (ARP, routing, DNS, port)
+- `!scan` — Port scan subnet
+- `!deepscan` — Deep scan target
+- `!browserspy` — Extract Chrome/Firefox history, bookmark, download
+- `!exfil` — Intelligence auto-collection
+- `!ai_recon` — Comprehensive AI-driven recon
+- `!ports` — Port aktif
+- `!wifi` — Scan WiFi
+- `!ping`, `!speedtest` — Network tools
+
+### Audio
+- `!listen` / `!audio` / `!rekam` — Rekam mic
+- `!tts` / `!bicarakan` / `!speak` — Text-to-speech
+
+### Stealth
+- `!keylog <on/off/status>` — Keylogger with window context, encrypted (Fernet)
+- `!stealth <on/off>` — Stealth mode (process masquerading)
+
+### WhatsApp Monitoring
+- `!wa scan` — Pairing QR code
+- `!wa check <nomor>` — Cek online/offline
+- `!wa monitor <nomor> [interval]` — Background monitoring + notif Telegram
+- `!wa stop/stop_all` — Hentikan monitoring
+- `!wa list` — Daftar monitor aktif
+- `!wa status` — Status koneksi WA
+- `!wa reset` — Reset pairing
+
+### Productivity
+- `!focus` / `!pomodoro` — Pomodoro timer + distraction blocker
+- `!timer` — Timer
+- `!workspace` / `!ws` — Save/load work sessions
+- `!note` / `!catat` — Quick notes
+- `!browser` / `!chrome` — Remote browser control
+- `!launch` — Buka aplikasi
+- `!apps` / `!applist` — List installed apps
+- `!daily` / `!report` — Daily report
+- `!reminder` / `!remind` — Reminder
+- `!todo` — Todo list
+- `!meeting` / `!meet` — Meeting mode (mute + DND)
+- `!schedule` / `!jadwal` — Scheduler
+- `!voice_cmd` / `!suara` — Voice command
+
+### Fleet (Multi-Agent)
+- `!fleet` — Fleet status
+- `!register` — Register agent
+- `!agents` — List connected agents
+- `!fleet switch <id>` — Switch target agent
+
+### Emergency
+- `!self_destruct` — Emergency cleanup
+- `!panic` — Panic button
+
+---
 
 ## Getting Started
 
@@ -33,132 +155,138 @@ Currently, the project boasts **9 Core Features** divided into four logical cate
 
 - Python 3.11+
 - Node.js 20+
-- FFmpeg (Required for Video and Voice Note processing)
-- Docker (Optional, for sandboxing)
-- A Telegram Bot Token and User ID
-- An NVIDIA NIM API Key (optional, for AI text processing)
+- Linux (X11 or Wayland with wlr-layer-shell)
+- Telegram Bot Token + User ID
+
+### System Dependencies
+
+```bash
+sudo bash INSTALL_DEPS.sh
+```
+
+Installs: `xdotool`, `wmctrl`, `xclip`, `pandoc`, `ffmpeg`, `brightnessctl`, `scrot`, `imagemagick`, and more.
 
 ### Installation
 
-1.  **Clone the repository:**
+```bash
+git clone https://github.com/your-username/RAV-SPY.git
+cd RAV-SPY
+npm install
+npm run setup
+```
 
-    ```bash
-    git clone https://github.com/your-username/remote-laptop-control.git
-    cd remote-laptop-control
-    ```
+The setup script will:
+- Create Python virtual environment (`venv/`)
+- Install all Python dependencies
+- Generate secure secrets (OTP, JWT, API Keys)
+- Guide you through Telegram Bot Token and User ID configuration
+- Create your `.env` file
 
-2.  **Install Node.js dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-3.  **Run the automated setup:**
-
-    ```bash
-    npm run setup
-    ```
-
-    This command will automatically:
-    - Create a Python virtual environment (`venv`).
-    - Install all Python dependencies.
-    - Generate secure secrets (OTP, JWT, API Keys).
-    - Guide you through configuring your Telegram Bot Token and User ID.
-    - Create your `.env` configuration file.
-
-### Running the Application
-
-You can run the application using Docker (recommended) or directly on your machine.
-
-#### Docker (Recommended)
-
-1.  **Build the Docker images:**
-
-    ```bash
-    docker-compose -f docker/docker-compose.yml build
-    ```
-
-2.  **Run the application:**
-
-    ```bash
-    docker-compose -f docker/docker-compose.yml up -d
-    ```
-
-#### Local Machine
-
-Simply run one command to start the entire application (Agent and Telegram Bot):
+### Running
 
 ```bash
 npm start
 ```
 
-Alternatively, you can run:
+Or directly:
 ```bash
 node run.js
 ```
 
-To also run the WhatsApp bot (optional), run:
+WhatsApp spy (optional, requires separate phone number):
 ```bash
-npm run whatsapp
-# or
 node run.js --whatsapp
 ```
 
+### Systemd (Auto-start)
+
+```bash
+sudo cp rav-spy.service /etc/systemd/system/
+sudo systemctl enable rav-spy
+sudo systemctl start rav-spy
+```
+
+---
+
 ## Configuration
 
-The application is configured using environment variables. See the `.env.example` file for a list of all available options.
+Environment variables in `.env`:
+
+| Variable | Description |
+|----------|-------------|
+| `TELEGRAM_BOT_TOKEN` | Bot token from @BotFather |
+| `ALLOWED_USER_IDS` | Your Telegram user ID(s) |
+| `NIM_API_KEY` | NVIDIA NIM API key (optional) |
+| `AGENT_API_KEY` | Agent API key |
+| `ENCRYPTION_KEY` | Fernet encryption key |
+| `HUB_URL` | Hub URL for fleet mode |
+| `OTP_SECRET` | TOTP secret for 2FA |
+| `JWT_SECRET` | JWT signing secret |
 
 ### Security
 
--   **OTP Secret:** Generate a new OTP secret and add it to your `.env` file. You will also need to add this secret to your authenticator app.
--   **JWT Secret:** Generate a new JWT secret and add it to your `.env` file.
--   **Allowed User IDs:** Add your Telegram and/or WhatsApp user IDs to the `ALLOWED_USER_IDS` environment variable.
--   **Agent API Key:** Generate a new API key for the agent and add it to your `.env` file.
+- **4-layer auth**: User ID whitelist → TOTP (Google Authenticator) → JWT (30 min) → Blacklist
+- **Rate limiter**: 10 commands/minute per user
+- **Audit logging**: Encrypted JSON logs, 10MB rotate, 30-day retention, gzip
+- **Sandbox**: Firejail/Docker for script execution
+- **Stealth mode**: Process name masquerading
 
-### NVIDIA NIM
+---
 
-To use the AI-powered commands, you will need to sign up for an NVIDIA NIM account and generate an API key. Add the API key to your `.env` file.
+## Architecture
 
-## Usage
+```
+bot/
+├── telegram_bot.py       # Entry point bot Telegram
+├── command_router.py     # Router 880+ baris
+├── auth.py               # 4-layer authentication
+├── rate_limiter.py       # Rate limiting
+├── monitor_task.py       # Heartbeat monitor
+├── agent_registry.py     # Multi-agent credentials
+└── fleet_pairing.py      # Fleet pairing codes
 
-Once the application is running, you can send commands to your laptop from your mobile device.
+agent/
+├── command_handler.py    # 3300+ baris handler
+├── whatsapp_spy.py       # WhatsApp monitoring (Baileys bridge)
+├── whatsapp/bridge.js    # Node.js Baileys WebSocket bridge
+├── memory/               # ChromaDB vector memory
+│   ├── store.py
+│   ├── manager.py
+│   ├── mcp_collector.py
+│   └── embeddings.py     # ONNX 384-dim
+└── ... (80+ modules)
 
-### Telegram
+ai_module/
+├── nim_client.py         # NVIDIA NIM integration
+├── fallback_parser.py    # 100+ command aliases
+├── prompt_templates.py   # System prompts
+├── fast_ai.py            # Lightweight AI fallback
+└── vision_ai.py          # Vision analysis
 
-1.  Start a chat with your Telegram bot.
-2.  Send the `/start` command to authenticate.
-3.  Enter the OTP from your authenticator app.
-4.  You can now send commands to your laptop.
+security/
+├── crypto.py             # Fernet AES-128 + PBKDF2
+├── sanitizer.py          # 4-layer input sanitizer
+├── sandbox.py            # Firejail/Docker sandbox
+├── audit_logger.py       # Encrypted audit logs
+└── watchdog.py           # Brute-force detection
+```
 
-### WhatsApp
+### WhatsApp Bridge
 
-1.  Send a message to your WhatsApp number.
-2.  You will be prompted to authenticate with an OTP.
-3.  Enter the OTP from your authenticator app.
-4.  You can now send commands to your laptop.
+WhatsApp presence monitoring uses a **Baileys Node.js bridge** — no browser needed:
 
-### Commands
+- Event-driven WebSocket langsung ke WhatsApp Web
+- Session persist via `creds.json` (tidak perlu scan QR ulang tiap restart)
+- QR debounce by content + time (min 30 detik)
+- Auto-reconnect dengan state-aware cleanup
+- Communication via stdin/stdout JSON-line protocol
 
-See the `allowed_commands.yaml` file for a list of all available commands. 
+---
 
-**Terminal Mode:**
-1. Type `!term` to enter the interactive shell.
-2. Type any shell command (e.g., `ls`, `cd`, `python3`).
-3. Type `!exit` to close the terminal session.
+## Development
 
-## Security Considerations
-
-This application gives you full control over your laptop. It is important to understand the security implications before using it.
-
--   **Do not share your API keys or tokens with anyone.**
--   **Only use this application on devices and networks that you own and trust.**
--   **Review the `allowed_commands.yaml` file to ensure that you are comfortable with the commands that can be executed.**
--   **Keep your system and dependencies up to date.**
+See [DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md) for contribution guidelines.
 
 ## Disclaimer
 
-The developers of this project are not responsible for any damage or loss of data that may occur as a result of using this application. Use at your own risk.
-
-## Contributing & Development
-
-We enforce strict rules for adding new features to ensure the security and stability of the host machines. If you are developing new features or acting as an AI assistant modifying this codebase, you **MUST** read and adhere to the [DEVELOPMENT_STANDARDS.md](docs/DEVELOPMENT_STANDARDS.md).
+For authorized monitoring of devices you own. Use at your own risk.

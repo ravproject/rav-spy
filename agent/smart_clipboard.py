@@ -7,7 +7,7 @@ from pathlib import Path
 from datetime import datetime
 from loguru import logger
 
-CLIP_HISTORY_FILE = Path.home() / ".config" / "rav-remote" / "clip_history.json"
+CLIP_HISTORY_FILE = Path.home() / ".config" / "rav-spy" / "clip_history.json"
 
 class SmartClipboard:
     def __init__(self):

@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 import json
 
-TUNNEL_DIR = Path.home() / ".config/rav-remote/tunnels"
+TUNNEL_DIR = Path.home() / ".config/rav-spy/tunnels"
 TUNNEL_DIR.mkdir(parents=True, exist_ok=True)
 DB_FILE = TUNNEL_DIR / "tunnels.json"
 

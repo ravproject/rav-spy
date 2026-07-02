@@ -5,8 +5,8 @@ import sys
 import json
 from pathlib import Path
 
-CRED_FILE = Path.home() / ".config" / "rav-remote" / "credentials.json"
-TOKEN_FILE = Path.home() / ".config" / "rav-remote" / "calendar_token.json"
+CRED_FILE = Path.home() / ".config" / "rav-spy" / "credentials.json"
+TOKEN_FILE = Path.home() / ".config" / "rav-spy" / "calendar_token.json"
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 if not CRED_FILE.exists():

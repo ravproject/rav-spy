@@ -1,0 +1,18 @@
+[Unit]
+Description=RAV-SPY — Stealth Laptop Intelligence via Telegram/WhatsApp
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=oxinos
+WorkingDirectory=/home/oxinos/Development/RAV-SPY
+ExecStart=/usr/bin/node /home/oxinos/Development/RAV-SPY/run.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

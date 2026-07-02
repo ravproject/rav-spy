@@ -8,7 +8,7 @@ from pathlib import Path
 from datetime import datetime
 from loguru import logger
 
-SYNC_DIR = Path.home() / ".config" / "rav-remote" / "sync"
+SYNC_DIR = Path.home() / ".config" / "rav-spy" / "sync"
 
 class SyncManager:
     def __init__(self):
@@ -26,7 +26,7 @@ class SyncManager:
                     shutil.rmtree(dest)
                 shutil.copytree(str(target), str(dest))
                 size = sum(f.stat().st_size for f in dest.rglob("*") if f.is_file())
-                return f"✅ Sinkronisasi lokal: {target.name} → rav-remote/sync/ ({size // 1024} KB)"
+                return f"✅ Sinkronisasi lokal: {target.name} → rav-spy/sync/ ({size // 1024} KB)"
             except Exception as e:
                 return f"❌ Gagal sinkronisasi: {e}"
         elif service in ("gdrive", "googledrive"):

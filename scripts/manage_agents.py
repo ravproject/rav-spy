@@ -14,7 +14,7 @@ Usage:
   python scripts/manage_agents.py pairing-code
 
   # Komputer tambahan — buat .env otomatis dari kode pairing:
-  python scripts/manage_agents.py init-agent <RAV1.xxxxx>
+  python scripts/manage_agents.py init-agent <SPY1.xxxxx>
 """
 import sys
 import os
@@ -39,7 +39,7 @@ from bot.fleet_pairing import (
 
 
 def print_help():
-    print("RAV-REMOTE Agent Manager")
+    print("RAV-SPY Agent Manager")
     print()
     print("Registry (jalankan di HUB):")
     print("  python scripts/manage_agents.py list")
@@ -47,7 +47,7 @@ def print_help():
     print("  python scripts/manage_agents.py remove <agent_id>")
     print()
     print("Fleet — hindari setup .env manual:")
-    print("  python scripts/manage_agents.py pairing-code          # hub: tampilkan kode RAV1.*")
+    print("  python scripts/manage_agents.py pairing-code          # hub: tampilkan kode SPY1.*")
     print("  python scripts/manage_agents.py init-agent <kode>     # agent: buat .env otomatis")
     print()
     print("Alur multi-komputer:")
@@ -110,7 +110,7 @@ def cmd_pairing_code():
 
 def cmd_init_agent(argv: list[str]):
     if len(argv) != 2:
-        print("Usage: python scripts/manage_agents.py init-agent <RAV1.xxxxx>")
+        print("Usage: python scripts/manage_agents.py init-agent <SPY1.xxxxx>")
         sys.exit(1)
     code = argv[1]
     try:

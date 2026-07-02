@@ -1,4 +1,4 @@
-# 🛡️ Panduan Pencegahan Regresi & Integritas Fitur (RAV-REMOTE)
+# 🛡️ Panduan Pencegahan Regresi & Integritas Fitur (RAV-SPY)
 
 Dokumen ini berfungsi sebagai panduan standar untuk memastikan setiap penambahan fitur baru atau modifikasi kode **tidak merusak fitur yang sudah ada** (Zero Regression Policy).
 

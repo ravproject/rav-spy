@@ -1,6 +1,6 @@
-# RAV-REMOTE Feature Reference
+# RAV-SPY Feature Reference
 
-> Dokumen ini adalah **single source of truth** untuk semua fitur RAV-REMOTE.
+> Dokumen ini adalah **single source of truth** untuk semua fitur RAV-SPY.
 > Setiap penambahan fitur BARU WAJIB update dokumen ini di **3 tempat**:
 > 1. `docs/FEATURES.md` — Daftar fitur (file ini)
 > 2. `ai_module/prompt_templates.py` — Biar AI tau tools yang tersedia
@@ -282,7 +282,7 @@ safe_commands:
 ## Arsitektur File
 
 ```
-rav-remote/
+rav-spy/
 ├── agent/
 │   ├── main.py                      # FastAPI app, lifespan (start background tasks)
 │   ├── command_handler.py           # Semua handler (2799 baris)

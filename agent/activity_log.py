@@ -2,7 +2,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import json
 
-LOG_DIR = Path.home() / ".config/rav-remote/logs"
+LOG_DIR = Path.home() / ".config/rav-spy/logs"
 LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 def log_activity(action: str, detail: str = ""):

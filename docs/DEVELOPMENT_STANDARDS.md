@@ -1,6 +1,6 @@
 # 📘 Standar Pengembangan & Rekayasa Perangkat Lunak (Enterprise Engineering Standards)
 
-Dokumen ini adalah **"Kitab Suci"** arsitektur dan panduan rekayasa untuk proyek **rav-remote**. 
+Dokumen ini adalah **"Kitab Suci"** arsitektur dan panduan rekayasa untuk proyek **rav-spy**. 
 Karena aplikasi ini bertindak sebagai *Remote Access Trojan (RAT)* yang dilegalkan (memberikan akses kontrol penuh ke Host OS), standar pengembangannya harus memenuhi kualifikasi **Enterprise/Industry Standard**.
 
 Setiap *Engineer* (Manusia maupun AI Agent) yang berkontribusi pada proyek ini WAJIB mematuhi panduan ini tanpa terkecuali. Mengabaikan dokumen ini sama dengan memasukkan celah keamanan yang fatal.

@@ -123,7 +123,7 @@ class MonitorTask:
                         # 2. Kirim desktop notification di laptop
                         try:
                             subprocess.Popen(
-                                ["notify-send", "Pengingat RAV-REMOTE", f"Tugas: {task_desc} sudah mencapai tenggat waktu!"],
+                                ["notify-send", "Pengingat RAV-SPY", f"Tugas: {task_desc} sudah mencapai tenggat waktu!"],
                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
                             )
                         except Exception:
